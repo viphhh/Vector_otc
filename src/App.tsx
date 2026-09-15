@@ -6,6 +6,7 @@ import SignalsStats from "./components/SignalsStats";
 import EuropeanStrategyGuide from "./components/EuropeanStrategyGuide";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { PlatformSelector, TRADING_PLATFORMS } from "./components/PlatformSelector";
+import PasscodeLock from "./components/PasscodeLock";
 import { TradingPlatform } from "./types";
 import vectorLogo from "./assets/images/vector_otc_logo_1789462402811.jpg";
 import {
@@ -42,6 +43,7 @@ import {
   Users,
   Moon,
   Sun,
+  Lock,
 } from "lucide-react";
 
 // Predefined available assets (Forex, OTC & Commodities with real-world live pricing)
@@ -271,6 +273,30 @@ function createInitialPrices(asset: Asset): number[] {
 
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Passcode Lock State (Lock PIN: 736387)
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
+    try {
+      return (
+        localStorage.getItem("site_access_unlocked") === "true" ||
+        sessionStorage.getItem("site_access_unlocked") === "true"
+      );
+    } catch {
+      return false;
+    }
+  });
+  const isUnlockedRef = useRef<boolean>(isUnlocked);
+  isUnlockedRef.current = isUnlocked;
+
+  const handleLockSite = () => {
+    try {
+      localStorage.removeItem("site_access_unlocked");
+      sessionStorage.removeItem("site_access_unlocked");
+    } catch (e) {
+      console.error(e);
+    }
+    setIsUnlocked(false);
+  };
 
   // State: Multiple Selected Assets (Defaults to 2 pairs from Pocket Option OTC list)
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([
@@ -763,6 +789,8 @@ export default function App() {
   // Active Real-time Price Tickers & Countdown Timers (Synchronized Tick Engine pegged to Live Feed)
   useEffect(() => {
     const tickInterval = setInterval(() => {
+      if (!isUnlockedRef.current) return;
+
       // 1. Simulate new real-time price tick for ALL assets anchored strictly to real live prices
       setPricesByAsset((prevMap) => {
         const updated: Record<string, number[]> = {};
@@ -882,6 +910,17 @@ export default function App() {
   const activeFocusedAsset =
     selectedAssets.find((a) => a.id === activeFocusedAssetId) || selectedAssets[0] || AVAILABLE_ASSETS[0];
 
+  if (!isUnlocked) {
+    return (
+      <div className={theme === "dark" ? "dark" : ""}>
+        <PasscodeLock
+          onUnlock={() => setIsUnlocked(true)}
+          logoUrl={vectorLogo}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white flex flex-col justify-between selection:bg-bento-green/30 font-sans" id="deriv-signals-root">
       {/* Top Navbar */}
@@ -971,6 +1010,17 @@ export default function App() {
             >
               <Bell className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span className="hidden sm:inline">جرس VIP 95%+</span>
+            </button>
+
+            {/* Lock Site Button */}
+            <button
+              onClick={handleLockSite}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
+              title="قفل تصفح الموقع برمز الأمان (736387)"
+              id="btn-lock-site"
+            >
+              <Lock className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">قفل الموقع</span>
             </button>
 
             {/* Theme Toggle Button */}

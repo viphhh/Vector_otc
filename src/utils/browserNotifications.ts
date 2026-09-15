@@ -170,7 +170,7 @@ export async function sendTestNotification(): Promise<boolean> {
           tag: "test-notification",
           vibrate: [200, 100, 200],
           data: { url: window.location.href }
-        });
+        } as any);
         return true;
       }
     } catch {}
