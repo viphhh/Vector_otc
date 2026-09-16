@@ -116,8 +116,8 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       {/* Toast Alert on Switch */}
       {statusMessage && (
         <div className="absolute top-full mt-2 left-0 right-0 sm:right-auto z-50 animate-bounce">
-          <div className="bg-white dark:bg-[#101726] border border-bento-green/40 shadow-xl rounded-xl px-3 py-2 text-sm flex items-center gap-2 text-bento-green whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-bento-green animate-ping"></span>
+          <div className="bg-white dark:bg-[#101726] border border-purple-500/40 shadow-xl rounded-xl px-3 py-2 text-sm flex items-center gap-2 text-purple-500 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span>
             <ShieldCheck className="w-4 h-4" />
             <span>{statusMessage}</span>
           </div>
@@ -134,8 +134,8 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
         >
           {/* Live indicator dot */}
           <div className="relative flex items-center justify-center">
-            <span className="w-2.5 h-2.5 rounded-full bg-bento-green"></span>
-            <span className="absolute w-2.5 h-2.5 rounded-full bg-bento-green animate-ping opacity-75"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <span className="absolute w-2.5 h-2.5 rounded-full bg-purple-500 animate-ping opacity-75"></span>
           </div>
 
           {/* Platform Label */}
@@ -223,7 +223,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-[11px] font-mono font-bold text-bento-green bg-bento-green/10 border border-bento-green/20 px-1.5 py-0.5 rounded">
+                      <span className="text-[11px] font-mono font-bold text-purple-500 bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 rounded">
                         +{platform.payoutRate}%
                       </span>
                       <div

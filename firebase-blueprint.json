@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing registration details and approval status.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "country": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "email", "phone", "country", "status", "role", "createdAt"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Educational blog articles, analysis posts, and trading guides with SEO metadata.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 200 },
+        "excerpt": { "type": "string", "maxLength": 500 },
+        "content": { "type": "string", "maxLength": 10000 },
+        "category": { "type": "string", "maxLength": 100 },
+        "tags": { "type": "array", "items": { "type": "string", "maxLength": 50 } },
+        "coverImage": { "type": "string", "maxLength": 500 },
+        "author": { "type": "string", "maxLength": 100 },
+        "authorEmail": { "type": "string", "maxLength": 150 },
+        "readTime": { "type": "number" },
+        "views": { "type": "number" },
+        "likes": { "type": "number" },
+        "seoTitle": { "type": "string", "maxLength": 200 },
+        "seoDescription": { "type": "string", "maxLength": 500 },
+        "slug": { "type": "string", "maxLength": 150 },
+        "keywords": { "type": "array", "items": { "type": "string", "maxLength": 50 } },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["title", "excerpt", "content", "category", "tags", "coverImage", "author", "authorEmail", "readTime", "views", "likes", "createdAt", "updatedAt"]
+    },
+    "SiteSeo": {
+      "title": "SiteSeo",
+      "description": "Global website SEO configuration, identity, OpenGraph metadata, and structured data.",
+      "type": "object",
+      "properties": {
+        "siteTitle": { "type": "string", "maxLength": 200 },
+        "metaDescription": { "type": "string", "maxLength": 500 },
+        "keywords": { "type": "array", "items": { "type": "string", "maxLength": 50 } },
+        "canonicalUrl": { "type": "string", "maxLength": 500 },
+        "ogImage": { "type": "string", "maxLength": 500 },
+        "ogSiteName": { "type": "string", "maxLength": 100 },
+        "twitterCard": { "type": "string", "maxLength": 50 },
+        "structuredDataType": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["siteTitle", "metaDescription", "keywords", "canonicalUrl", "ogImage", "ogSiteName", "twitterCard", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores users and their approval state."
+    },
+    "articles/{articleId}": {
+      "schema": { "$ref": "#/entities/Article" },
+      "description": "Stores blog articles and trading guides."
+    },
+    "settings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSeo" },
+      "description": "Stores site-wide settings such as SEO and identity configurations."
+    }
+  }
+}

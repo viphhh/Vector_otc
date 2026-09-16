@@ -1,0 +1,132 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'phone', 'country', 'status', 'role', 'createdAt']) &&
+             data.keys().size() == 7 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 150 &&
+             data.phone is string && data.phone.size() <= 30 &&
+             data.country is string && data.country.size() <= 50 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.role in ['user', 'admin'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidArticle(data) {
+      return data.keys().hasAll(['title', 'excerpt', 'content', 'category', 'tags', 'coverImage', 'author', 'authorEmail', 'readTime', 'views', 'likes', 'createdAt', 'updatedAt']) &&
+             data.keys().hasOnly(['title', 'excerpt', 'content', 'category', 'tags', 'coverImage', 'author', 'authorEmail', 'readTime', 'views', 'likes', 'createdAt', 'updatedAt', 'seoTitle', 'seoDescription', 'slug', 'keywords']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.excerpt is string && data.excerpt.size() <= 500 &&
+             data.content is string && data.content.size() <= 20000 &&
+             data.category is string && data.category.size() <= 100 &&
+             data.tags is list && data.tags.size() <= 20 &&
+             data.coverImage is string && data.coverImage.size() <= 500 &&
+             data.author is string && data.author.size() <= 100 &&
+             data.authorEmail is string && data.authorEmail.size() <= 150 &&
+             data.readTime is number &&
+             data.views is number &&
+             data.likes is number &&
+             (!('seoTitle' in data) || (data.seoTitle is string && data.seoTitle.size() <= 200)) &&
+             (!('seoDescription' in data) || (data.seoDescription is string && data.seoDescription.size() <= 500)) &&
+             (!('slug' in data) || (data.slug is string && data.slug.size() <= 150)) &&
+             (!('keywords' in data) || (data.keywords is list && data.keywords.size() <= 30)) &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+
+    function isValidSiteSeo(data) {
+      return data.keys().hasAll(['siteTitle', 'metaDescription', 'keywords', 'canonicalUrl', 'ogImage', 'ogSiteName', 'twitterCard', 'updatedAt']) &&
+             data.siteTitle is string && data.siteTitle.size() <= 200 &&
+             data.metaDescription is string && data.metaDescription.size() <= 500 &&
+             data.keywords is list && data.keywords.size() <= 30 &&
+             data.canonicalUrl is string && data.canonicalUrl.size() <= 500 &&
+             data.ogImage is string && data.ogImage.size() <= 500 &&
+             data.ogSiteName is string && data.ogSiteName.size() <= 100 &&
+             data.twitterCard is string && data.twitterCard.size() <= 50 &&
+             (!('structuredDataType' in data) || (data.structuredDataType is string && data.structuredDataType.size() <= 50)) &&
+             data.updatedAt is timestamp;
+    }
+
+    function isSuperAdminAuth() {
+      return request.auth.token.email == 'viphhhxxx@gmail.com';
+    }
+
+    match /users/{userId} {
+      allow get: if isVerified() && isValidId(userId) && (isAdmin() || isOwner(userId));
+      
+      allow list: if isVerified() && isAdmin();
+      
+      allow create: if isVerified() && isValidId(userId) && isOwner(userId) &&
+                       isValidUser(incoming()) &&
+                       (
+                         (incoming().status == 'pending' && incoming().role == 'user') ||
+                         (isSuperAdminAuth() && incoming().status == 'approved' && incoming().role == 'admin')
+                       ) &&
+                       incoming().createdAt == request.time;
+                       
+      allow update: if isVerified() && isValidId(userId) && isValidUser(incoming()) && (
+                      (isAdmin()) ||
+                      (isOwner(userId) && 
+                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'country', 'updatedAt']) &&
+                       incoming().status == existing().status &&
+                       incoming().role == existing().role &&
+                       incoming().createdAt == existing().createdAt)
+                    );
+                    
+      allow delete: if isVerified() && isValidId(userId) && isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow get, list: if true;
+
+      allow create: if isVerified() && isValidId(articleId) && isValidArticle(incoming()) &&
+                       (isAdmin() || isSuperAdminAuth() || incoming().authorEmail == request.auth.token.email) &&
+                       incoming().createdAt == request.time &&
+                       incoming().updatedAt == request.time;
+
+      allow update: if isValidId(articleId) && (
+                      (isVerified() && isValidArticle(incoming()) && (isAdmin() || isSuperAdminAuth() || existing().authorEmail == request.auth.token.email) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time) ||
+                      (incoming().diff(existing()).affectedKeys().hasOnly(['views']) && incoming().views == existing().views + 1) ||
+                      (isVerified() && incoming().diff(existing()).affectedKeys().hasOnly(['likes']) && (incoming().likes == existing().likes + 1 || incoming().likes == existing().likes - 1))
+                    );
+
+      allow delete: if isVerified() && isValidId(articleId) && (isAdmin() || isSuperAdminAuth() || existing().authorEmail == request.auth.token.email);
+    }
+
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow create, update: if isVerified() && isValidId(settingId) && (isAdmin() || isSuperAdminAuth()) && isValidSiteSeo(incoming()) && incoming().updatedAt == request.time;
+      allow delete: if isVerified() && isValidId(settingId) && (isAdmin() || isSuperAdminAuth());
+    }
+  }
+}

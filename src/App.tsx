@@ -2,11 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { Asset, Timeframe, Signal, AIAnalysis } from "./types";
 import RealtimeChart from "./components/RealtimeChart";
 import SignalsFeed from "./components/SignalsFeed";
-import SignalsStats from "./components/SignalsStats";
+import { HeroStatistics } from "./components/HeroStatistics";
 import EuropeanStrategyGuide from "./components/EuropeanStrategyGuide";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { PlatformSelector, TRADING_PLATFORMS } from "./components/PlatformSelector";
-import PasscodeLock from "./components/PasscodeLock";
+import AdminUsersPanel from "./components/AdminUsersPanel";
+import { BlogSection } from "./components/BlogSection";
+import { SeoManagementModal } from "./components/SeoManagementModal";
+import { loadStoredSeo, applySeoToDom } from "./utils/seoHelper";
+import { useAuth } from "./contexts/AuthContext";
 import { TradingPlatform } from "./types";
 import vectorLogo from "./assets/images/vector_otc_logo_1789462402811.jpg";
 import {
@@ -43,11 +47,59 @@ import {
   Users,
   Moon,
   Sun,
-  Lock,
+  Search,
+  Newspaper,
+  ArrowLeft,
+  Globe,
 } from "lucide-react";
 
 // Predefined available assets (Forex, OTC & Commodities with real-world live pricing)
 const AVAILABLE_ASSETS: Asset[] = [
+  {
+    id: "bnb_usd_otc",
+    nameAr: "BNB/USD OTC",
+    nameEn: "BNB/USD OTC",
+    currentPrice: 595.40,
+    category: "crypto",
+    decimalDigits: 2,
+    volatilityRate: 1.5,
+  },
+  {
+    id: "trx_usd_otc",
+    nameAr: "TRON/USD OTC",
+    nameEn: "TRX/USD OTC",
+    currentPrice: 0.1215,
+    category: "crypto",
+    decimalDigits: 4,
+    volatilityRate: 0.0015,
+  },
+  {
+    id: "aud_usd_otc",
+    nameAr: "AUD/USD OTC",
+    nameEn: "AUD/USD OTC",
+    currentPrice: 0.65120,
+    category: "otc",
+    decimalDigits: 5,
+    volatilityRate: 0.00015,
+  },
+  {
+    id: "btc_usd_otc",
+    nameAr: "BTC/USD OTC",
+    nameEn: "BTC/USD OTC",
+    currentPrice: 91450.25,
+    category: "crypto",
+    decimalDigits: 2,
+    volatilityRate: 15.5,
+  },
+  {
+    id: "eth_usd_otc",
+    nameAr: "ETH/USD OTC",
+    nameEn: "ETH/USD OTC",
+    currentPrice: 3450.15,
+    category: "crypto",
+    decimalDigits: 2,
+    volatilityRate: 4.5,
+  },
   // --- Pairs requested from Pocket Option OTC list ---
   {
     id: "american_express_otc",
@@ -273,30 +325,10 @@ function createInitialPrices(asset: Asset): number[] {
 
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { profile, logOut } = useAuth();
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
-  // Passcode Lock State (Lock PIN: 736387)
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
-    try {
-      return (
-        localStorage.getItem("site_access_unlocked") === "true" ||
-        sessionStorage.getItem("site_access_unlocked") === "true"
-      );
-    } catch {
-      return false;
-    }
-  });
-  const isUnlockedRef = useRef<boolean>(isUnlocked);
-  isUnlockedRef.current = isUnlocked;
 
-  const handleLockSite = () => {
-    try {
-      localStorage.removeItem("site_access_unlocked");
-      sessionStorage.removeItem("site_access_unlocked");
-    } catch (e) {
-      console.error(e);
-    }
-    setIsUnlocked(false);
-  };
 
   // State: Multiple Selected Assets (Defaults to 2 pairs from Pocket Option OTC list)
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([
@@ -339,6 +371,8 @@ export default function App() {
   }, []);
 
   const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>("5s");
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [riskLevel, setRiskLevel] = useState<"all" | "high">("high"); // all = >=85%, high = 92% to 100%
@@ -396,6 +430,17 @@ export default function App() {
   const [aiAnalyses, setAiAnalyses] = useState<Record<string, AIAnalysis>>({});
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [isStrategyGuideOpen, setIsStrategyGuideOpen] = useState<boolean>(false);
+  const [isBlogOpen, setIsBlogOpen] = useState<boolean>(false);
+  const [isSeoModalOpen, setIsSeoModalOpen] = useState<boolean>(false);
+
+  // Apply stored SEO to document on mount
+  useEffect(() => {
+    try {
+      applySeoToDom(loadStoredSeo());
+    } catch (e) {
+      console.error("Failed to apply initial SEO:", e);
+    }
+  }, []);
 
   // Timer to next automated signal
   const [secondsToNextSignal, setSecondsToNextSignal] = useState<number>(5);
@@ -789,7 +834,6 @@ export default function App() {
   // Active Real-time Price Tickers & Countdown Timers (Synchronized Tick Engine pegged to Live Feed)
   useEffect(() => {
     const tickInterval = setInterval(() => {
-      if (!isUnlockedRef.current) return;
 
       // 1. Simulate new real-time price tick for ALL assets anchored strictly to real live prices
       setPricesByAsset((prevMap) => {
@@ -910,25 +954,14 @@ export default function App() {
   const activeFocusedAsset =
     selectedAssets.find((a) => a.id === activeFocusedAssetId) || selectedAssets[0] || AVAILABLE_ASSETS[0];
 
-  if (!isUnlocked) {
-    return (
-      <div className={theme === "dark" ? "dark" : ""}>
-        <PasscodeLock
-          onUnlock={() => setIsUnlocked(true)}
-          logoUrl={vectorLogo}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white flex flex-col justify-between selection:bg-bento-green/30 font-sans" id="deriv-signals-root">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0612] text-slate-900 dark:text-white flex flex-col justify-between selection:bg-purple-500/30 font-sans" id="deriv-signals-root">
       {/* Top Navbar */}
       <header className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 px-2 sm:px-6 py-4 shadow-2xl">
         <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-3">
           {/* Logo & Brand */}
           <div className="flex items-center space-x-3 space-x-reverse">
-            <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-[#090D1A] border border-cyan-500/30 shadow-lg shadow-cyan-500/20 overflow-hidden group">
+            <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-[#140b2e] border border-fuchsia-500/30 shadow-lg shadow-fuchsia-500/20 overflow-hidden group">
               <img
                 src={vectorLogo}
                 alt="Vector OTC Logo"
@@ -981,21 +1014,43 @@ export default function App() {
             {/* European Strategy Guide Button */}
             <button
               onClick={() => setIsStrategyGuideOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-bento-green/40 bg-bento-green/10 text-bento-green hover:bg-bento-green/20 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
               id="btn-open-strategy-guide"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>دليل الاستراتيجية الأوروبية ⚡</span>
             </button>
 
+            {/* Blog & Articles Button */}
+            <button
+              onClick={() => setIsBlogOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-fuchsia-500/40 bg-gradient-to-r from-purple-600/20 via-fuchsia-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-fuchsia-600/30 text-fuchsia-300 hover:border-fuchsia-400 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm shadow-fuchsia-500/10"
+              id="btn-open-blog"
+              title="تصفح ونشر المقالات والتصنيفات والوسوم في مدونة المنصة"
+            >
+              <Newspaper className="w-3.5 h-3.5 text-fuchsia-400" />
+              <span>المدونة والمقالات 📰</span>
+            </button>
+
+            {/* SEO Studio Button */}
+            <button
+              onClick={() => setIsSeoModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-purple-500/40 bg-gradient-to-r from-purple-900/30 via-[#1e1038] to-fuchsia-900/30 hover:from-purple-900/50 hover:to-fuchsia-900/50 text-purple-200 hover:text-white hover:border-fuchsia-400 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
+              id="btn-open-seo-studio"
+              title="مركز السيو والذكاء الاصطناعي: تخصيص هوية الموقع، العناوين، الأقسام والوسوم وتوليد السيو التلقائي"
+            >
+              <Globe className="w-3.5 h-3.5 text-fuchsia-400" />
+              <span>إدارة السيو 🌐✨</span>
+            </button>
+
             {/* Active Users Badge */}
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-sm font-bold shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 text-sm font-bold shadow-sm"
               title="المستخدمين النشطين حالياً في المنصة"
             >
               <div className="relative flex items-center justify-center w-3 h-3">
-                <div className="absolute inset-0 bg-cyan-400 rounded-full animate-ping opacity-75"></div>
-                <div className="relative w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
+                <div className="absolute inset-0 bg-fuchsia-400 rounded-full animate-ping opacity-75"></div>
+                <div className="relative w-1.5 h-1.5 bg-fuchsia-400 rounded-full"></div>
               </div>
               <Users className="w-3.5 h-3.5" />
               <span>{activeUsers.toLocaleString()}</span>
@@ -1012,15 +1067,23 @@ export default function App() {
               <span className="hidden sm:inline">جرس VIP 95%+</span>
             </button>
 
-            {/* Lock Site Button */}
+
+            {profile?.role === 'admin' && (
+              <button
+                onClick={() => setIsAdminPanelOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
+              >
+                <Users className="w-3.5 h-3.5 text-purple-400" />
+                <span className="hidden sm:inline">الإدارة</span>
+              </button>
+            )}
+
+            {/* Logout Button */}
             <button
-              onClick={handleLockSite}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
-              title="قفل تصفح الموقع برمز الأمان (736387)"
-              id="btn-lock-site"
+              onClick={logOut}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-500/30 bg-slate-500/10 text-slate-400 hover:bg-slate-500/20 hover:border-slate-500/50 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm"
             >
-              <Lock className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden sm:inline">قفل الموقع</span>
+              تسجيل خروج
             </button>
 
             {/* Theme Toggle Button */}
@@ -1028,8 +1091,8 @@ export default function App() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
                 theme === "dark"
-                  ? "bg-slate-100 dark:bg-[#121212] border-slate-200 dark:border-white/10 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-[#121212]/80"
-                  : "bg-slate-50 dark:bg-[#050505] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:hover:bg-[#121212]"
+                  ? "bg-slate-100 dark:bg-[#140b2e] border-slate-200 dark:border-white/10 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-[#140b2e]/80"
+                  : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:hover:bg-[#140b2e]"
               }`}
               title={theme === "dark" ? "تفعيل الوضع النهاري" : "تفعيل الوضع الليلي"}
             >
@@ -1041,8 +1104,8 @@ export default function App() {
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
                 soundEnabled
-                  ? "bg-slate-100 dark:bg-[#121212] border-slate-200 dark:border-white/10 text-bento-green hover:bg-slate-100 dark:bg-[#121212]/80"
-                  : "bg-slate-50 dark:bg-[#050505] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:bg-[#121212]"
+                  ? "bg-slate-100 dark:bg-[#140b2e] border-slate-200 dark:border-white/10 text-purple-500 hover:bg-slate-100 dark:bg-[#140b2e]/80"
+                  : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:bg-[#140b2e]"
               }`}
               title={soundEnabled ? "كتم أصوات الإشارات" : "تشغيل أصوات الإشارات"}
               id="btn-toggle-sound"
@@ -1059,10 +1122,10 @@ export default function App() {
         <div className="bg-white dark:bg-bento-card border border-slate-200 dark:border-white/10 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col md:flex-row items-center justify-between gap-3 relative overflow-hidden" id="platform-quick-selector">
           <div className="flex items-center gap-2.5 w-full md:w-auto justify-between md:justify-start">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-bento-green animate-pulse"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"></div>
               <span className="text-sm font-bold text-slate-700 dark:text-slate-200">اختر منصة التداول</span>
             </div>
-            <span className="text-sm bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 px-2 py-0.5 rounded-md font-mono font-bold">
+            <span className="text-sm bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20 px-2 py-0.5 rounded-md font-mono font-bold">
               عائد {currentPlatform.payoutRate}%
             </span>
           </div>
@@ -1076,11 +1139,11 @@ export default function App() {
                   onClick={() => handleSelectPlatform(plat)}
                   className={`px-3 py-1.5 rounded-xl border text-sm font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer active:scale-95 ${
                     isSelected
-                      ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20"
-                      : "bg-[#060913] border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-white/25 hover:bg-slate-100 dark:bg-white/5"
+                      ? "bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-300 shadow-md shadow-fuchsia-500/20"
+                      : "bg-[#0a0612] border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-white/25 hover:bg-slate-100 dark:bg-white/5"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-cyan-400 animate-ping" : "bg-white/20"}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-fuchsia-400 animate-ping" : "bg-white/20"}`}></span>
                   <span>{plat.nameAr}</span>
                 </button>
               );
@@ -1100,26 +1163,90 @@ export default function App() {
         )}
 
         {/* Fixed Asset Selection Grid */}
-        <div className="bg-white dark:bg-bento-card border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-xl relative">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-[#140b2e] dark:bg-[#0a0612] border border-slate-200 dark:border-white/5 rounded-2xl p-4 shadow-xl relative">
+          <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-              <Grid className="w-4 h-4 text-bento-green" /> اختر أزواج التداول السريعة
+              <Grid className="w-4 h-4 text-purple-500" /> اختر أزواج التداول السريعة
             </h2>
-            <span className="text-sm bg-bento-green/10 text-bento-green border border-bento-green/20 px-2 py-0.5 rounded-lg font-bold">
-              {selectedAssets.length} أزواج محددة
+            <span className="text-xs bg-purple-500/10 text-purple-500 border border-purple-500/20 px-2 py-0.5 rounded-lg font-bold whitespace-nowrap">
+              {selectedAssets.length} محددة
             </span>
           </div>
+
+          {/* Custom Category Tabs (Pocket Option Style) */}
+          <div className="flex flex-wrap items-center gap-2 mb-3" dir="ltr">
+            {[
+              { id: "all", label: "All", icon: "⚡", count: AVAILABLE_ASSETS.length },
+              { id: "currencies", label: "Forex OTC", icon: "🏦", count: AVAILABLE_ASSETS.filter(a => !a.id.includes("express") && !a.id.includes("intel") && !a.id.includes("amazon") && !a.id.includes("apple") && !a.id.includes("tesla") && !a.id.includes("boeing") && !a.id.includes("oil") && !a.id.includes("brent") && !a.id.includes("wti") && !a.id.includes("gold") && !a.id.includes("silver") && a.category !== "commodities" && a.category !== "crypto" && !a.id.includes("btc") && !a.id.includes("eth")).length },
+              { id: "stocks", label: "Stocks OTC", icon: "📈", count: AVAILABLE_ASSETS.filter(a => a.id.includes("express") || a.id.includes("intel") || a.id.includes("amazon") || a.id.includes("apple") || a.id.includes("tesla") || a.id.includes("boeing")).length },
+              { id: "commodities", label: "Metals OTC", icon: "🥇", count: AVAILABLE_ASSETS.filter(a => a.id.includes("oil") || a.id.includes("brent") || a.id.includes("wti") || a.id.includes("gold") || a.id.includes("silver") || a.category === "commodities").length },
+              { id: "crypto", label: "Crypto", icon: "₿", count: AVAILABLE_ASSETS.filter(a => a.id.includes("btc") || a.id.includes("eth") || a.category === "crypto").length },
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategoryFilter(cat.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                  selectedCategoryFilter === cat.id 
+                  ? "bg-fuchsia-500/10 border-fuchsia-400 text-fuchsia-400 shadow-[0_0_8px_rgba(34,211,238,0.2)]" 
+                  : "bg-[#1e143f] border-transparent text-slate-300 hover:bg-white/5"
+                }`}
+              >
+                <span className="text-sm opacity-90 grayscale-[0.2]">{cat.icon}</span>
+                <span>{cat.label}</span>
+                <span className={`ml-1 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-[10px] font-bold ${selectedCategoryFilter === cat.id ? 'bg-fuchsia-400 text-slate-900' : 'bg-[#291a54] text-slate-400'}`}>
+                  {cat.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mb-4">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-slate-500" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="بحث... EURUSD, Tesla"
+              dir="rtl"
+              className="w-full bg-[#1e143f] border border-transparent rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500/40 transition-colors"
+            />
+          </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-            {AVAILABLE_ASSETS.map((asset) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-[300px] sm:max-h-none overflow-y-auto pr-1 custom-scrollbar">
+            {AVAILABLE_ASSETS.filter((asset) => {
+              // 1. First apply category filter
+              let matchesCategory = true;
+              if (selectedCategoryFilter !== "all") {
+                const isStock = asset.id.includes("express") || asset.id.includes("intel") || asset.id.includes("amazon") || asset.id.includes("apple") || asset.id.includes("tesla") || asset.id.includes("boeing");
+                const isCommodity = asset.id.includes("oil") || asset.id.includes("brent") || asset.id.includes("wti") || asset.id.includes("gold") || asset.id.includes("silver") || asset.category === "commodities";
+                const isCrypto = asset.id.includes("btc") || asset.id.includes("eth") || asset.category === "crypto";
+                
+                if (selectedCategoryFilter === "stocks") matchesCategory = isStock;
+                else if (selectedCategoryFilter === "commodities") matchesCategory = isCommodity;
+                else if (selectedCategoryFilter === "crypto") matchesCategory = isCrypto;
+                else if (selectedCategoryFilter === "currencies") matchesCategory = !isStock && !isCommodity && !isCrypto;
+              }
+
+              // 2. Then apply search query filter
+              let matchesSearch = true;
+              if (searchQuery.trim() !== "") {
+                const query = searchQuery.toLowerCase().trim();
+                matchesSearch = asset.nameAr.toLowerCase().includes(query) || asset.nameEn.toLowerCase().includes(query) || asset.id.toLowerCase().includes(query);
+              }
+
+              return matchesCategory && matchesSearch;
+            }).map((asset) => {
               const isSelected = selectedAssets.some((a) => a.id === asset.id);
               
               let AssetIcon = Activity;
-              let iconColor = "text-bento-green";
+              let iconColor = "text-purple-500";
               
               if (asset.id.includes("oil") || asset.id.includes("brent") || asset.id.includes("wti")) {
                 AssetIcon = Droplet;
-                iconColor = "text-cyan-400";
+                iconColor = "text-fuchsia-400";
               } else if (asset.id.includes("gold") || asset.id.includes("silver") || asset.category === "commodities") {
                 AssetIcon = Coins;
                 iconColor = "text-amber-400";
@@ -1147,12 +1274,12 @@ export default function App() {
                   onClick={() => toggleAssetSelection(asset)}
                   className={`relative flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-sm font-bold transition-all cursor-pointer w-full text-right ${
                     isSelected
-                      ? "bg-bento-green/15 border-bento-green shadow-sm shadow-bento-green/10"
-                      : "bg-slate-50 dark:bg-[#050505] border-slate-100 dark:border-white/5 hover:border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:bg-white/5"
+                      ? "bg-purple-500/15 border-purple-500 shadow-sm shadow-purple-500/10"
+                      : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 hover:border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:bg-white/5"
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className={`p-1.5 rounded-lg flex-shrink-0 transition-colors ${isSelected ? "bg-bento-green text-white dark:text-[#050505]" : "bg-slate-100 dark:bg-white/5 " + iconColor}`}>
+                    <div className={`p-1.5 rounded-lg flex-shrink-0 transition-colors ${isSelected ? "bg-purple-500 text-white" : "bg-slate-100 dark:bg-white/5 " + iconColor}`}>
                       <AssetIcon className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -1173,7 +1300,7 @@ export default function App() {
                   </div>
                   
                   <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border transition-colors ${
-                    isSelected ? "bg-bento-green border-bento-green text-white dark:text-[#050505]" : "border-slate-200 dark:border-white/10"
+                    isSelected ? "bg-purple-500 border-purple-500 text-white" : "border-slate-200 dark:border-white/10"
                   }`}>
                     {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                   </div>
@@ -1186,11 +1313,11 @@ export default function App() {
         {/* Multi-Asset Configuration Panel */}
         <div className="bg-white dark:bg-bento-card border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden" id="config-control-panel">
           {/* Subtle background glow */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-bento-green/5 rounded-full blur-3xl pointer-events-none bento-glow"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl pointer-events-none bento-glow"></div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 relative z-10 border-b border-slate-200 dark:border-white/10 pb-3">
             <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-              <Sliders className="w-4 h-4 text-bento-green" /> إعدادات البوت والتحليل
+              <Sliders className="w-4 h-4 text-purple-500" /> إعدادات البوت والتحليل
             </h2>
           </div>
 
@@ -1198,14 +1325,14 @@ export default function App() {
             {/* 1. Timeframe Selection */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">الفريم الزمني (Timeframe)</label>
-              <div className="grid grid-cols-5 gap-1 bg-slate-50 dark:bg-[#050505] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-5 gap-1 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 {(["5s", "15s", "30s", "1m", "5m"] as Timeframe[]).map((tf) => (
                   <button
                     key={tf}
                     onClick={() => handleTimeframeChange(tf)}
                     className={`py-1.5 rounded-lg text-sm font-bold transition-all cursor-pointer ${
                       selectedTimeframe === tf
-                        ? "bg-bento-green text-white dark:text-[#050505] shadow-lg shadow-bento-green/20"
+                        ? "bg-purple-500 text-white shadow-lg shadow-purple-500/20"
                         : "text-slate-500 dark:text-[#999999] hover:text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-white/5"
                     }`}
                     id={`tf-btn-${tf}`}
@@ -1219,7 +1346,7 @@ export default function App() {
             {/* 2. Signal Filtering Strategy */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">مستوى فلترة الإشارات</label>
-              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#050505] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 <button
                   onClick={() => setRiskLevel("all")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all cursor-pointer ${
@@ -1233,7 +1360,7 @@ export default function App() {
                   onClick={() => setRiskLevel("high")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all cursor-pointer ${
                     riskLevel === "high"
-                      ? "bg-bento-green text-white dark:text-[#050505] shadow-lg shadow-bento-green/10"
+                      ? "bg-purple-500 text-white shadow-lg shadow-purple-500/10"
                       : "text-slate-500 dark:text-[#999999] hover:text-slate-700 dark:text-slate-200"
                   }`}
                   id="risk-btn-high"
@@ -1246,12 +1373,12 @@ export default function App() {
             {/* 3. Multi-Chart Display Mode Toggle */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">نمط عرض الشاشات والرسوم البيانية</label>
-              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#050505] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 <button
                   onClick={() => setChartLayout("grid")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     chartLayout === "grid"
-                      ? "bg-bento-green text-white dark:text-[#050505] shadow-lg shadow-bento-green/10"
+                      ? "bg-purple-500 text-white shadow-lg shadow-purple-500/10"
                       : "text-slate-500 dark:text-[#999999] hover:text-slate-700 dark:text-slate-200"
                   }`}
                   id="layout-btn-grid"
@@ -1263,7 +1390,7 @@ export default function App() {
                   onClick={() => setChartLayout("single")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     chartLayout === "single"
-                      ? "bg-bento-green text-white dark:text-[#050505] shadow-lg shadow-bento-green/10"
+                      ? "bg-purple-500 text-white shadow-lg shadow-purple-500/10"
                       : "text-slate-500 dark:text-[#999999] hover:text-slate-700 dark:text-slate-200"
                   }`}
                   id="layout-btn-single"
@@ -1279,7 +1406,7 @@ export default function App() {
           <div className="mt-5 pt-4 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row gap-3 items-center justify-between relative z-10">
             <div className="text-right">
               <span className="text-sm text-slate-500 dark:text-[#999999] block mb-0.5">وضع مولد الإشارات المتزامن</span>
-              <span className={`text-sm font-bold ${isGenerating ? "text-bento-green animate-pulse" : "text-amber-500"}`}>
+              <span className={`text-sm font-bold ${isGenerating ? "text-purple-500 animate-pulse" : "text-amber-500"}`}>
                 {isGenerating
                   ? `نشط ومستمر (إرسال ${selectedAssets.length} إشارات متزامنة كل ${selectedTimeframe === "1m" ? "60 ثانية" : selectedTimeframe === "5m" ? "5 دقائق" : selectedTimeframe})`
                   : "متوقف (قم بالتشغيل لبدء البوت على جميع الأزواج المحددة)"}
@@ -1299,11 +1426,11 @@ export default function App() {
                 className={`flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 space-x-reverse px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer ${
                   isGenerating
                     ? "bg-slate-100 dark:bg-white/5 text-slate-500 cursor-not-allowed"
-                    : "bg-bento-green text-white dark:text-[#050505] hover:bg-bento-green/90 hover:shadow-lg hover:shadow-bento-green/20 active:scale-95"
+                    : "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] hover:from-purple-500 hover:to-fuchsia-500 active:scale-95"
                 }`}
                 id="btn-start-bot"
               >
-                <Play className="w-3.5 h-3.5 fill-[#050505] text-white dark:text-[#050505]" />
+                <Play className="w-3.5 h-3.5 fill-white text-white" />
                 <span>تشغيل البوت على {selectedAssets.length} أزواج</span>
               </button>
 
@@ -1326,7 +1453,7 @@ export default function App() {
 
           {/* Next Signal Countdown Indicator overlay (if running) */}
           {isGenerating && (
-            <div className="mt-4 bg-slate-50 dark:bg-[#050505]/80 p-3 rounded-xl border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-pulse relative z-10">
+            <div className="mt-4 bg-slate-50 dark:bg-[#0a0612]/80 p-3 rounded-xl border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-pulse relative z-10">
               <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                 <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
                 <span>
@@ -1353,7 +1480,7 @@ export default function App() {
                   checked={telegramEnabled}
                   onChange={(e) => setTelegramEnabled(e.target.checked)}
                 />
-                <div className="w-9 h-5 bg-slate-50 dark:bg-[#050505] border border-slate-200 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-bento-green"></div>
+                <div className="w-9 h-5 bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
               </label>
             </div>
 
@@ -1366,7 +1493,7 @@ export default function App() {
                     value={telegramToken}
                     onChange={(e) => setTelegramToken(e.target.value)}
                     placeholder="1234567890:AAH_..."
-                    className="w-full bg-slate-50 dark:bg-[#050505] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-bento-green focus:outline-none transition-colors"
+                    className="w-full bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -1376,7 +1503,7 @@ export default function App() {
                     value={telegramChatId}
                     onChange={(e) => setTelegramChatId(e.target.value)}
                     placeholder="-1001234567890"
-                    className="w-full bg-slate-50 dark:bg-[#050505] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-bento-green focus:outline-none transition-colors"
+                    className="w-full bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -1384,9 +1511,18 @@ export default function App() {
           </div>
         </div>
 
-        {/* Statistics Banner - Only rendered when showSignalsAndIndicators is true */}
+        {/* Hero Statistics Banner - Replaces the old SignalsStats */}
         {showSignalsAndIndicators && (
-          <SignalsStats completedHistory={completedHistory} virtualBalance={virtualBalance} />
+          <HeroStatistics
+            completedHistory={completedHistory}
+            activeSignalsCount={signals.filter(s => s.status === 'active').length}
+            isGenerating={isGenerating}
+            onGenerateClick={() => {
+              setIsGenerating(true);
+              setSecondsToNextSignal(getTimeframeSeconds(selectedTimeframe));
+              generateSignal();
+            }}
+          />
         )}
 
         {/* Real-time Trading Charts - Hidden from UI but running in background */}
@@ -1432,9 +1568,46 @@ export default function App() {
           <AnalyticsDashboard completedHistory={completedHistory} />
         )}
 
+        {/* Quick Blog Highlights Card */}
+        <div className="bg-gradient-to-r from-[#140b2e] via-[#1a0f38] to-[#140b2e] border border-purple-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-fuchsia-600 to-pink-600 p-0.5 shadow-lg shadow-fuchsia-500/25 flex-shrink-0">
+              <div className="w-full h-full bg-[#0a0612] rounded-[14px] flex items-center justify-center text-fuchsia-400">
+                <Newspaper className="w-6 h-6" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-extrabold text-white text-base">مدونة Vector_OTC للمتداولين والمحللين</h4>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-fuchsia-500/30 text-fuchsia-200 border border-fuchsia-400/40">ميزة جديدة</span>
+              </div>
+              <p className="text-xs text-purple-200/80 mt-1 leading-relaxed">
+                استكشف المقالات الاحترافية، شروحات السكالبنج، أسرار خوارزميات الـ OTC، إدارة المخاطر، وانشر مقالاتك وتحليلاتك الخاصة.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 self-stretch sm:self-auto">
+            <button
+              onClick={() => setIsSeoModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-900/40 hover:bg-purple-800/60 border border-purple-500/30 text-purple-200 hover:text-white font-bold text-xs md:text-sm transition-all cursor-pointer justify-center active:scale-95 shadow-sm"
+              title="تخصيص وتوليد إعدادات السيو والوسوم تلقائياً بالذكاء الاصطناعي"
+            >
+              <Sparkles className="w-4 h-4 text-fuchsia-400" />
+              <span>إدارة السيو 🌐✨</span>
+            </button>
+            <button
+              onClick={() => setIsBlogOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs md:text-sm shadow-lg shadow-fuchsia-600/30 transition-all cursor-pointer whitespace-nowrap justify-center active:scale-95"
+            >
+              <span>فتح المدونة والمقالات</span>
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
         {/* Bottom Educational Disclaimer Banner */}
         <div className="bg-white dark:bg-bento-card/60 border border-slate-200 dark:border-white/10 p-4 rounded-2xl flex items-start gap-3">
-          <Info className="w-5 h-5 text-bento-green flex-shrink-0 mt-0.5" />
+          <Info className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-slate-500 dark:text-[#999999] leading-relaxed">
             <h4 className="font-bold text-slate-600 dark:text-slate-300 mb-1">إخلاء مسؤولية هامة عن تداول الخيارات الثنائية (Pocket Option & Deriv Higher/Lower):</h4>
             <p>
@@ -1451,12 +1624,29 @@ export default function App() {
         onClose={() => setIsStrategyGuideOpen(false)}
       />
 
+      {/* Blog & Articles System */}
+      <BlogSection
+        isOpen={isBlogOpen}
+        onClose={() => setIsBlogOpen(false)}
+      />
+
+      {/* SEO & Identity Management Studio */}
+      <SeoManagementModal
+        isOpen={isSeoModalOpen}
+        onClose={() => setIsSeoModalOpen(false)}
+      />
+
       {/* Footer copyright */}
       <footer className="border-t border-slate-200 dark:border-white/10 bg-white dark:bg-bento-card py-5 text-center text-sm text-slate-500 dark:text-[#999999]">
         <div className="max-w-7xl mx-auto px-4 flex justify-center items-center">
           <span>💡 وضوح بلا تعقيد: خلف الكواليس معادلات برمجية بالغة التعقيد، لكن أمام عينيك: إشارة واضحة، في الوقت المناسب، وبقرار ثقة.</span>
         </div>
       </footer>
+
+      {/* Admin Panel Overlay */}
+      {isAdminPanelOpen && (
+        <AdminUsersPanel onClose={() => setIsAdminPanelOpen(false)} />
+      )}
     </div>
   );
 }

@@ -31,23 +31,23 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="bg-slate-100 dark:bg-[#121212] border border-white/15 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative"
+        className="bg-slate-100 dark:bg-[#140b2e] border border-white/15 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative"
         id="european-strategy-modal"
       >
         {/* Glow accent */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-bento-green/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         {/* Modal Header */}
         <div className="p-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between relative z-10 bg-slate-100 dark:bg-[#161616]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-bento-green/15 text-bento-green rounded-2xl border border-bento-green/30">
+            <div className="p-2.5 bg-emerald-500/15 text-emerald-500 rounded-2xl border border-emerald-500/30">
               <Zap className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-black text-slate-900 dark:text-white">الاستراتيجية الأوروبية الناجحة لـ Pocket Option</h2>
-                <span className="text-xs bg-bento-green/20 text-bento-green border border-bento-green/40 px-2 py-0.5 rounded-full font-extrabold">
+                <span className="text-xs bg-emerald-500/20 text-emerald-500 border border-emerald-500/40 px-2 py-0.5 rounded-full font-extrabold">
                   Win Rate 96%+
                 </span>
               </div>
@@ -72,7 +72,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
             onClick={() => setActiveTab("rules")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 cursor-pointer ${
               activeTab === "rules"
-                ? "border-bento-green text-bento-green bg-slate-100 dark:bg-white/5"
+                ? "border-emerald-500 text-emerald-500 bg-slate-100 dark:bg-white/5"
                 : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200"
             }`}
           >
@@ -84,7 +84,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
             onClick={() => setActiveTab("indicators")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 cursor-pointer ${
               activeTab === "indicators"
-                ? "border-bento-green text-bento-green bg-slate-100 dark:bg-white/5"
+                ? "border-emerald-500 text-emerald-500 bg-slate-100 dark:bg-white/5"
                 : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200"
             }`}
           >
@@ -96,7 +96,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
             onClick={() => setActiveTab("money_mgmt")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 cursor-pointer ${
               activeTab === "money_mgmt"
-                ? "border-bento-green text-bento-green bg-slate-100 dark:bg-white/5"
+                ? "border-emerald-500 text-emerald-500 bg-slate-100 dark:bg-white/5"
                 : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200"
             }`}
           >
@@ -110,43 +110,43 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
           {activeTab === "rules" && (
             <div className="space-y-6">
               {/* Call Rule */}
-              <div className="bg-[#181818] border border-bento-green/30 rounded-2xl p-5 relative overflow-hidden">
+              <div className="bg-[#1e143f] border border-emerald-500/30 rounded-2xl p-5 relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="p-1.5 bg-bento-green/20 text-bento-green rounded-lg">
+                  <div className="p-1.5 bg-emerald-500/20 text-emerald-500 rounded-lg">
                     <ArrowUpRight className="w-5 h-5" />
                   </div>
                   <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
                     قواعد صفقة الشراء CALL (أعلى 🟢)
                   </h3>
-                  <span className="mr-auto text-xs bg-bento-green text-white dark:text-[#050505] px-2.5 py-0.5 rounded-full font-black">
+                  <span className="mr-auto text-xs bg-emerald-500 text-white px-2.5 py-0.5 rounded-full font-black">
                     نسبة النجاح: 96-99%
                   </span>
                 </div>
 
                 <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-green">01.</span>
+                    <span className="font-mono font-bold text-emerald-500">01.</span>
                     <p>
                       <strong>ترتيب المتوسطات EMA Ribbon:</strong> أن يكون خط <span className="text-[#38BDF8] font-mono">EMA 8 (سماوي)</span> أعلى من <span className="text-[#F59E0B] font-mono">EMA 21 (ذهبي)</span>، وكلاهما أعلى من <span className="text-[#A855F7] font-mono">EMA 55 (بنفسجي)</span>.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-green">02.</span>
+                    <span className="font-mono font-bold text-emerald-500">02.</span>
                     <p>
                       <strong>مؤشر ستوكاستيك (Stochastic 5,3,3):</strong> يرتد ويتقاطع صعوداً من منطقة التشبع البيعي (أقل من مستوى 20).
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-green">03.</span>
+                    <span className="font-mono font-bold text-emerald-500">03.</span>
                     <p>
                       <strong>البولنجر باند (Bollinger Bands):</strong> السعر يلمس أو يرتد من الحد السفلي أو يخترق خط المنتصف للأعلى (انفجار سعري).
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-green">04.</span>
+                    <span className="font-mono font-bold text-emerald-500">04.</span>
                     <p>
                       <strong>شمعة التأكيد الأوروبية:</strong> إغلاق شمعة خضراء ابتلاعية (Bullish Engulfing) أو شمعة مطرقة (Hammer) على مستوى الدعم.
                     </p>
@@ -155,43 +155,43 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
               </div>
 
               {/* Put Rule */}
-              <div className="bg-[#181818] border border-bento-red/30 rounded-2xl p-5 relative overflow-hidden">
+              <div className="bg-[#1e143f] border border-red-500/30 rounded-2xl p-5 relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="p-1.5 bg-bento-red/20 text-bento-red rounded-lg">
+                  <div className="p-1.5 bg-red-500/20 text-red-500 rounded-lg">
                     <ArrowDownRight className="w-5 h-5" />
                   </div>
                   <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
                     قواعد صفقة البيع PUT (أدنى 🔴)
                   </h3>
-                  <span className="mr-auto text-xs bg-bento-red text-slate-900 dark:text-white px-2.5 py-0.5 rounded-full font-black">
+                  <span className="mr-auto text-xs bg-red-500 text-slate-900 dark:text-white px-2.5 py-0.5 rounded-full font-black">
                     نسبة النجاح: 96-99%
                   </span>
                 </div>
 
                 <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-red">01.</span>
+                    <span className="font-mono font-bold text-red-500">01.</span>
                     <p>
                       <strong>ترتيب المتوسطات EMA Ribbon:</strong> أن يكون خط <span className="text-[#38BDF8] font-mono">EMA 8 (سماوي)</span> أسفل <span className="text-[#F59E0B] font-mono">EMA 21 (ذهبي)</span>، وكلاهما أسفل <span className="text-[#A855F7] font-mono">EMA 55 (بنفسجي)</span>.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-red">02.</span>
+                    <span className="font-mono font-bold text-red-500">02.</span>
                     <p>
                       <strong>مؤشر ستوكاستيك (Stochastic 5,3,3):</strong> يرتد ويتقاطع هبوطاً من منطقة التشبع الشرائي (أعلى من مستوى 80).
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-red">03.</span>
+                    <span className="font-mono font-bold text-red-500">03.</span>
                     <p>
                       <strong>البولنجر باند (Bollinger Bands):</strong> السعر يلمس أو يرتد من الحد العلوي للقناة أو يكسر خط المنتصف لأسفل.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 bg-black/40 p-2.5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <span className="font-mono font-bold text-bento-red">04.</span>
+                    <span className="font-mono font-bold text-red-500">04.</span>
                     <p>
                       <strong>شمعة التأكيد الأوروبية:</strong> إغلاق شمعة رفض (Pin Bar Rejection) مع ظل علوي طويل أو شمعة حمراء هابطة قوية.
                     </p>
@@ -240,13 +240,13 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
               </div>
 
               <div className="bg-slate-100 dark:bg-[#161616] p-4 rounded-2xl border border-slate-200 dark:border-white/10 flex items-start gap-3">
-                <div className="p-2 bg-bento-green/15 text-bento-green rounded-xl font-mono font-black text-xs">
+                <div className="p-2 bg-emerald-500/15 text-emerald-500 rounded-xl font-mono font-black text-xs">
                   POCKET
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm">توقيتات الانتهاء الموصى بها على Pocket Option</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                    أفضل نتائج للاستراتيجية الأوروبية تتحقق على الفريمات السريعة (<span className="text-bento-green font-bold">5s، 15s، 30s، 1m، 5m</span>) لصفقات الخيارات الثنائية ذات العائد 92%+.
+                    أفضل نتائج للاستراتيجية الأوروبية تتحقق على الفريمات السريعة (<span className="text-emerald-500 font-bold">5s، 15s، 30s، 1m، 5m</span>) لصفقات الخيارات الثنائية ذات العائد 92%+.
                   </p>
                 </div>
               </div>
@@ -255,9 +255,9 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
 
           {activeTab === "money_mgmt" && (
             <div className="space-y-4">
-              <div className="bg-gradient-to-br from-bento-green/10 to-transparent p-5 rounded-2xl border border-bento-green/25">
+              <div className="bg-gradient-to-br from-emerald-500/10 to-transparent p-5 rounded-2xl border border-emerald-500/25">
                 <h4 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-bento-green" />
+                  <ShieldCheck className="w-5 h-5 text-emerald-500" />
                   قاعدة إدارة رأس المال الأوروبية الصارمة (Anti-Martingale + 1 Recovery Step)
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -268,7 +268,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                 <div className="bg-slate-100 dark:bg-[#161616] p-4 rounded-xl border border-slate-200 dark:border-white/10">
                   <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">نسبة المخاطرة لكل صفقة</span>
-                  <strong className="text-base text-bento-green font-mono font-bold">1% - 2%</strong>
+                  <strong className="text-base text-emerald-500 font-mono font-bold">1% - 2%</strong>
                 </div>
 
                 <div className="bg-slate-100 dark:bg-[#161616] p-4 rounded-xl border border-slate-200 dark:border-white/10">
@@ -278,13 +278,13 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
 
                 <div className="bg-slate-100 dark:bg-[#161616] p-4 rounded-xl border border-slate-200 dark:border-white/10">
                   <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">وقف الخسارة اليومي (Stop Loss)</span>
-                  <strong className="text-base text-bento-red font-mono font-bold">-4% كحد أقصى</strong>
+                  <strong className="text-base text-red-500 font-mono font-bold">-4% كحد أقصى</strong>
                 </div>
               </div>
 
               <div className="bg-slate-100 dark:bg-[#161616] p-4 rounded-2xl border border-slate-200 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 space-y-2">
                 <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-bold">
-                  <Clock className="w-4 h-4 text-bento-green" />
+                  <Clock className="w-4 h-4 text-emerald-500" />
                   <span>أفضل أوقات التداول وفق الجلسة الأوروبية:</span>
                 </div>
                 <p className="leading-relaxed">
@@ -300,13 +300,13 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
         {/* Footer */}
         <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#161616] flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-bento-green" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
             الاستراتيجية الأوروبية مفعلة وتغذي إشارات البوت تلقائياً
           </span>
 
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-bento-green text-white dark:text-[#050505] font-bold hover:bg-bento-green/90 transition-all cursor-pointer"
+            className="px-5 py-2 rounded-xl bg-emerald-500 text-white font-bold hover:bg-emerald-500/90 transition-all cursor-pointer"
           >
             فهمت، متابعة التداول
           </button>

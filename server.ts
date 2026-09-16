@@ -403,7 +403,7 @@ app.post("/api/scan", async (req, res) => {
 تأكد من إرسال رد JSON نظيف ومطابق تماماً للمطلوب.`;
 
         const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: "gemini-3.8-flash",
           contents: prompt,
           config: {
             responseMimeType: "application/json",
@@ -482,6 +482,289 @@ app.post("/api/scan", async (req, res) => {
   } catch (err: any) {
     console.error("Critical server error in analyze API:", err);
     res.status(500).json({ error: "حدث خطأ أثناء إجراء التحليل الفني بالذكاء الاصطناعي." });
+  }
+});
+
+// ==========================================
+// AI AUTOMATIC SEO GENERATION ENGINE
+// Generates optimized Titles, Meta Descriptions, Slugs, Keywords, and Tags
+// ==========================================
+app.get("/api/seo/default", (req, res) => {
+  res.json({
+    siteTitle: "Vector_OTC | منصة إشارات التداول والخيارات الثنائية واستراتيجيات السكالبنج",
+    metaDescription: "منصة Vector_OTC الرائدة في تحليل أسواق OTC والخيارات الثنائية مع إشارات حية، استراتيجية أوروبية ثلاثية، ومدونة تعليمية شاملة ومقالات احترافية.",
+    keywords: [
+      "Vector_OTC",
+      "خيارات ثنائية",
+      "Pocket Option",
+      "إشارات تداول",
+      "الاستراتيجية الأوروبية",
+      "سكالبنج",
+      "تداول OTC",
+      "تحليل فني",
+      "تداول الذهب",
+      "مؤشر ستوكاستيك",
+      "بولنجر باند",
+      "شريط المتوسطات EMA"
+    ],
+    canonicalUrl: "https://vectorotc.app/",
+    ogImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop&q=80",
+    ogSiteName: "Vector_OTC Options",
+    twitterCard: "summary_large_image",
+    structuredDataType: "WebApplication"
+  });
+});
+
+app.post("/api/seo/generate", async (req, res) => {
+  try {
+    const { type, title, content, excerpt, category, tagName, existingTags } = req.body;
+    const ai = getGeminiClient();
+
+    // 1. Try Gemini generation if available
+    if (ai) {
+      try {
+        let systemInstruction = "";
+        let userPrompt = "";
+
+        if (type === "article") {
+          userPrompt = `أنت خبير محترف في تحسين محركات البحث (SEO Master) وخبير في تداول الأسواق المالية والخيارات الثنائية (Pocket Option & OTC).
+قم بإنشاء بيانات سيو محسنة بالكامل ومتوافقة مع معايير Google SERP لمقال التداول التالي:
+- عنوان المقال: ${title || "مقال تداول جديد"}
+- تصنيف المقال: ${category || "استراتيجيات التداول"}
+- الملخص أو المحتوى: ${content ? content.substring(0, 1000) : (excerpt || "دليل واستراتيجية في التداول والخيارات الثنائية")}
+
+قم بإرجاع كائن JSON دقيق يحتوي:
+1. "seoTitle": عنوان سيو جذاب وقوي لمحركات البحث لا يتجاوز 60 حرفاً، يحتوي الكلمات المفتاحية الأساسية.
+2. "seoDescription": وصف ميتا احترافي يحث على النقر (High CTR Meta Description) بين 130 و 155 حرفاً باللغة العربية.
+3. "slug": رابط دائم باللغة الإنجليزية أو العربية المعربة بحروف صغيرة وشرطات (مثال: otc-scalping-pocket-option-strategy).
+4. "keywords": مصفوفة تحتوي 6 إلى 10 كلمات مفتاحية رئيسية باللغة العربية والإنجليزية.
+5. "suggestedTags": مصفوفة من 4 إلى 7 وسوم (#) عربية قوية (مثال: ["#سكالبنج", "#بوكت_اوبشن", "#تداول_الذهب"]).`;
+
+          const geminiRes = await ai.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: userPrompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  seoTitle: { type: Type.STRING },
+                  seoDescription: { type: Type.STRING },
+                  slug: { type: Type.STRING },
+                  keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  suggestedTags: { type: Type.ARRAY, items: { type: Type.STRING } },
+                },
+                required: ["seoTitle", "seoDescription", "slug", "keywords", "suggestedTags"]
+              }
+            }
+          });
+
+          if (geminiRes.text) {
+            const parsed = JSON.parse(geminiRes.text.trim());
+            return res.json({ success: true, ...parsed, source: "gemini-ai" });
+          }
+        } else if (type === "site") {
+          userPrompt = `أنت كبير مسؤولي السيو (Chief SEO Officer) لمنصة تداول مالية اسمها Vector_OTC متخصصة في إشارات الخيارات الثنائية (Pocket Option) والسكالبنج والتحليل الفني والمدونة التعليمية.
+قم بإنشاء هوية السيو الكاملة للموقع:
+- "siteTitle": عنوان الموقع الرئيسي لمحركات البحث بين 40 و 60 حرفاً.
+- "metaDescription": وصف الموقع لمحركات البحث مقنع وجذاب بين 130 و 160 حرفاً.
+- "keywords": مصفوفة تضم 10-15 كلمة مفتاحية رئيسية ومطلوبة في سوق الفوركس والـ OTC.
+- "ogTitle": عنوان المشاركة على منصات التواصل (OpenGraph).
+- "ogDescription": وصف المشاركة الاجتماعية.
+- "canonicalUrl": "https://vectorotc.app/"
+- "ogSiteName": "Vector_OTC Trading Platform"
+- "twitterCard": "summary_large_image"
+- "structuredDataType": "WebApplication"`;
+
+          const geminiRes = await ai.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: userPrompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  siteTitle: { type: Type.STRING },
+                  metaDescription: { type: Type.STRING },
+                  keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  ogTitle: { type: Type.STRING },
+                  ogDescription: { type: Type.STRING },
+                  canonicalUrl: { type: Type.STRING },
+                  ogSiteName: { type: Type.STRING },
+                  twitterCard: { type: Type.STRING },
+                  structuredDataType: { type: Type.STRING },
+                },
+                required: ["siteTitle", "metaDescription", "keywords", "ogTitle", "ogDescription"]
+              }
+            }
+          });
+
+          if (geminiRes.text) {
+            const parsed = JSON.parse(geminiRes.text.trim());
+            return res.json({
+              success: true,
+              ...parsed,
+              ogImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop&q=80",
+              source: "gemini-ai"
+            });
+          }
+        } else if (type === "category") {
+          userPrompt = `أنشئ بيانات سيو دقيقة لتصنيف مدونة تداول مالي باسم "${category || title || "استراتيجيات تداول"}":
+أرجع كائن JSON:
+- "seoTitle": عنوان السيو للتصنيف
+- "seoDescription": وصف ميتا للتصنيف بين 120-150 حرفاً
+- "keywords": 6 كلمات مفتاحية
+- "suggestedTags": 4 وسوم مناسبة`;
+
+          const geminiRes = await ai.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: userPrompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  seoTitle: { type: Type.STRING },
+                  seoDescription: { type: Type.STRING },
+                  keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  suggestedTags: { type: Type.ARRAY, items: { type: Type.STRING } },
+                },
+                required: ["seoTitle", "seoDescription", "keywords", "suggestedTags"]
+              }
+            }
+          });
+
+          if (geminiRes.text) {
+            const parsed = JSON.parse(geminiRes.text.trim());
+            return res.json({ success: true, ...parsed, source: "gemini-ai" });
+          }
+        } else if (type === "tag") {
+          userPrompt = `أنشئ بيانات سيو ووسوم ذات صلة لوسم التداول: "${tagName || "تداول_OTC"}":
+أرجع كائن JSON:
+- "seoTitle": عنوان سيو لصفحة الوسم
+- "seoDescription": وصف ميتا مختصر
+- "relatedTags": 5 وسوم مرتبطة`;
+
+          const geminiRes = await ai.models.generateContent({
+            model: "gemini-3.8-flash",
+            contents: userPrompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  seoTitle: { type: Type.STRING },
+                  seoDescription: { type: Type.STRING },
+                  relatedTags: { type: Type.ARRAY, items: { type: Type.STRING } },
+                },
+                required: ["seoTitle", "seoDescription", "relatedTags"]
+              }
+            }
+          });
+
+          if (geminiRes.text) {
+            const parsed = JSON.parse(geminiRes.text.trim());
+            return res.json({ success: true, ...parsed, source: "gemini-ai" });
+          }
+        }
+      } catch (geminiError: any) {
+        console.warn("[Gemini SEO] Falling back to intelligent heuristic SEO generator:", geminiError.message);
+      }
+    }
+
+    // 2. High Quality Algorithmic Fallback Generator
+    if (type === "article") {
+      const cleanTitle = (title || "دليل التداول والسكالبنج").trim();
+      const safeSlug = cleanTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .substring(0, 50);
+
+      const generatedSeoTitle = `${cleanTitle} | دليل واستراتيجيات Vector_OTC`.substring(0, 60);
+      const generatedDesc = excerpt
+        ? excerpt.substring(0, 150)
+        : `تعرف على تفاصيل ${cleanTitle} وأفضل أساليب إدارة رأس المال والتداول الدقيق على منصة بوكت اوبشن مع تطبيق الاستراتيجية الأوروبية وتحليل الذكاء الاصطناعي.`;
+
+      const words = cleanTitle.split(" ").filter((w: string) => w.length > 2);
+      const generatedKeywords = Array.from(new Set([
+        ...words,
+        "تداول OTC",
+        "بوكت اوبشن",
+        "الاستراتيجية الأوروبية",
+        "سكالبنج",
+        "إشارات دقيقة",
+        category || "تحليل فني"
+      ])).slice(0, 8);
+
+      const suggestedTags = [
+        `#${cleanTitle.replace(/\s+/g, "_").substring(0, 20)}`,
+        "#تداول_OTC",
+        "#سكالبنج_احترافي",
+        "#بوكت_اوبشن",
+        "#الاستراتيجية_الأوروبية"
+      ];
+
+      return res.json({
+        success: true,
+        seoTitle: generatedSeoTitle,
+        seoDescription: generatedDesc.substring(0, 155),
+        slug: safeSlug || "otc-trading-guide",
+        keywords: generatedKeywords,
+        suggestedTags: suggestedTags,
+        source: "algorithmic-engine"
+      });
+    } else if (type === "site") {
+      return res.json({
+        success: true,
+        siteTitle: "Vector_OTC | منصة إشارات التداول والخيارات الثنائية واستراتيجيات السكالبنج",
+        metaDescription: "منصة Vector_OTC الأولى لتحليل أسواق OTC والخيارات الثنائية بدقة عالية، تعتمد الاستراتيجية الأوروبية الثلاثية (EMA + Stochastic + Bollinger) ومحرك الذكاء الاصطناعي.",
+        keywords: [
+          "Vector_OTC",
+          "خيارات ثنائية",
+          "Pocket Option",
+          "إشارات تداول",
+          "الاستراتيجية الأوروبية",
+          "سكالبنج 5 ثواني",
+          "تداول OTC",
+          "تحليل فني",
+          "تداول الذهب والنفط",
+          "مؤشر ستوكاستيك",
+          "بولنجر باند",
+          "مدونة التداول"
+        ],
+        ogTitle: "Vector_OTC | دقة تصل إلى 80% في إشارات الخيارات الثنائية و OTC",
+        ogDescription: "إشارات تداول فورية ولحظية مع تحليل عميق بالذكاء الاصطناعي وأسرار أسواق OTC واستراتيجيات السكالبنج الأوروبية.",
+        canonicalUrl: "https://vectorotc.app/",
+        ogSiteName: "Vector_OTC Options",
+        ogImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop&q=80",
+        twitterCard: "summary_large_image",
+        structuredDataType: "WebApplication",
+        source: "algorithmic-engine"
+      });
+    } else if (type === "category") {
+      const catName = category || title || "استراتيجيات التداول";
+      return res.json({
+        success: true,
+        seoTitle: `مقالات ${catName} | مدونة Vector_OTC للمتداولين`,
+        seoDescription: `تصفح أفضل الشروحات والمقالات الحصرية في ${catName} لتطوير مهاراتك في تداول الخيارات الثنائية والسكالبنج وتحقيق أرباح مستدامة.`,
+        keywords: [catName, "تداول", "شروحات تداول", "بوكت اوبشن", "تحليل الأسواق", "Vector_OTC"],
+        suggestedTags: [`#${catName.replace(/\s+/g, "_")}`, "#تداول", "#استراتيجيات", "#OTC"],
+        source: "algorithmic-engine"
+      });
+    } else {
+      const tName = (tagName || "تداول").replace("#", "");
+      return res.json({
+        success: true,
+        seoTitle: `مقالات وسم #${tName} | مدونة Vector_OTC`,
+        seoDescription: `جميع التحليلات والمقالات المتخصصة المرتبطة بوسم #${tName} في منصة Vector_OTC لمساعدتك على اتخاذ قرارات تداول رابحة.`,
+        relatedTags: [`#${tName}`, "#سكالبنج", "#تداول_الذهب", "#بوكت_اوبشن", "#تحليل_الاتجاه"],
+        source: "algorithmic-engine"
+      });
+    }
+  } catch (err: any) {
+    console.error("Critical error in SEO generation endpoint:", err);
+    res.status(500).json({ error: "فشل إنشاء بيانات السيو.", message: err.message });
   }
 });
 

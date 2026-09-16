@@ -5,9 +5,73 @@ export interface Asset {
   nameAr: string;
   nameEn: string;
   currentPrice: number;
-  category: "synthetic" | "forex" | "commodities" | "otc";
+  category: "synthetic" | "forex" | "commodities" | "otc" | "crypto";
   decimalDigits: number;
   volatilityRate: number; // For tick simulation
+}
+
+export interface BlogCategory {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  icon?: string;
+  description?: string;
+  count?: number;
+}
+
+export interface BlogTag {
+  id: string;
+  name: string;
+  count?: number;
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  slug?: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  tags: string[];
+  coverImage: string;
+  author: string;
+  authorEmail?: string;
+  readTime: number; // in minutes
+  views: number;
+  likes: number;
+  featured?: boolean;
+  published: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  keywords?: string[];
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface SiteSeo {
+  siteTitle: string;
+  metaDescription: string;
+  keywords: string[];
+  canonicalUrl: string;
+  ogImage: string;
+  ogSiteName: string;
+  twitterCard: string;
+  structuredDataType?: string;
+  updatedAt?: any;
+}
+
+export interface CategorySeo {
+  id: string;
+  seoTitle: string;
+  seoDescription: string;
+  keywords: string[];
+}
+
+export interface TagSeo {
+  id: string;
+  seoTitle: string;
+  seoDescription: string;
+  relatedTags: string[];
 }
 
 export interface Signal {

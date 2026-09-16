@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'phone', 'country', 'status', 'role', 'createdAt']) &&
+             data.keys().size() == 7 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 150 &&
+             data.phone is string && data.phone.size() <= 30 &&
+             data.country is string && data.country.size() <= 50 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.role in ['user', 'admin'] &&
+             data.createdAt is timestamp;
+    }
+
+    match /users/{userId} {
+      allow get: if isVerified() && isValidId(userId) && (isAdmin() || isOwner(userId));
+      
+      allow list: if isVerified() && isAdmin();
+      
+      allow create: if isVerified() && isValidId(userId) && isOwner(userId) &&
+                       isValidUser(incoming()) &&
+                       incoming().status == 'pending' &&
+                       incoming().role == 'user' &&
+                       incoming().createdAt == request.time;
+                       
+      allow update: if isVerified() && isValidId(userId) && isValidUser(incoming()) && (
+                      (isAdmin()) ||
+                      (isOwner(userId) && 
+                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'country', 'updatedAt']) &&
+                       incoming().status == existing().status &&
+                       incoming().role == existing().role &&
+                       incoming().createdAt == existing().createdAt)
+                    );
+                    
+      allow delete: if isVerified() && isValidId(userId) && isAdmin();
+    }
+  }
+}

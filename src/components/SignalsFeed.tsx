@@ -39,11 +39,11 @@ export default function SignalsFeed({
       <div className="bg-white dark:bg-bento-card border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden">
         <div className="flex justify-between items-center mb-3 border-b border-slate-200 dark:border-white/10 pb-2.5">
           <div className="flex items-center space-x-2 space-x-reverse">
-            <div className="w-2.5 h-2.5 bg-bento-green rounded-full animate-ping"></div>
+            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></div>
             <h3 className="font-bold text-slate-900 dark:text-white text-sm">الاشارات النشطة الحالية</h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm bg-slate-50 dark:bg-[#050505]/50 text-slate-500 dark:text-[#999999] px-2.5 py-1 rounded-lg border border-slate-100 dark:border-white/5 font-mono">
+            <span className="text-sm bg-slate-50 dark:bg-[#0a0612]/50 text-slate-500 dark:text-[#999999] px-2.5 py-1 rounded-lg border border-slate-100 dark:border-white/5 font-mono">
               النشطة حالياً: {activeSignals.length}
             </span>
             {onToggleHide && (
@@ -64,14 +64,14 @@ export default function SignalsFeed({
         {filterOptions.length > 0 && activeSignals.length > 0 && (
           <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 mb-2 scrollbar-none">
             <span className="text-sm text-slate-500 dark:text-[#999999] ml-1 flex items-center gap-1 flex-shrink-0">
-              <Filter className="w-3 h-3 text-bento-green" /> فلترة الإشارات:
+              <Filter className="w-3 h-3 text-emerald-400" /> فلترة الإشارات:
             </span>
             <button
               onClick={() => setFilterAssetId("all")}
               className={`px-2.5 py-1 rounded-lg text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0 ${
                 filterAssetId === "all"
-                  ? "bg-bento-green text-white dark:text-[#050505] shadow-md shadow-bento-green/20"
-                  : "bg-slate-50 dark:bg-[#050505] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
+                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                  : "bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
               }`}
             >
               الكل
@@ -82,8 +82,8 @@ export default function SignalsFeed({
                 onClick={() => setFilterAssetId(opt.id)}
                 className={`px-2.5 py-1 rounded-lg text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0 ${
                   filterAssetId === opt.id
-                    ? "bg-bento-green text-white dark:text-[#050505] shadow-md shadow-bento-green/20"
-                    : "bg-slate-50 dark:bg-[#050505] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
+                    ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                    : "bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
                 }`}
               >
                 {opt.nameAr}
@@ -129,10 +129,10 @@ export default function SignalsFeed({
                       : (isCall ? "rgba(74, 222, 128, 0.2)" : "rgba(248, 113, 113, 0.2)")
                   }}
                   transition={{ duration: 1.5, ease: "easeOut" }}
-                  className={`bg-slate-50 dark:bg-[#050505]/50 border rounded-xl p-4 flex flex-col justify-between shadow-lg relative ${
+                  className={`bg-slate-50 dark:bg-[#0a0612]/50 border rounded-xl p-4 flex flex-col justify-between shadow-lg relative ${
                     isVip 
                       ? "border-amber-500/40 hover:border-amber-400/70" 
-                      : (isCall ? "hover:border-bento-green/40" : "hover:border-bento-red/40")
+                      : (isCall ? "hover:border-emerald-500/40" : "hover:border-red-500/40")
                   }`}
                   id={`active-signal-${signal.id}`}
                 >
@@ -143,7 +143,7 @@ export default function SignalsFeed({
                         <span className="font-bold text-slate-700 dark:text-slate-200 text-sm md:text-base">
                           {signal.assetNameAr}
                         </span>
-                        <span className="text-sm bg-slate-50 dark:bg-[#050505] text-slate-500 dark:text-[#999999] px-1.5 py-0.5 rounded border border-slate-100 dark:border-white/5 font-semibold font-mono">
+                        <span className="text-sm bg-slate-50 dark:bg-[#0a0612] text-slate-500 dark:text-[#999999] px-1.5 py-0.5 rounded border border-slate-100 dark:border-white/5 font-semibold font-mono">
                           {signal.timeframe}
                         </span>
                         {platformName && (
@@ -157,7 +157,7 @@ export default function SignalsFeed({
                             <span>استراتيجية أوروبية VIP</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-0.5 text-[9px] bg-bento-green/10 text-bento-green border border-bento-green/20 px-1.5 py-0.5 rounded font-bold">
+                          <span className="inline-flex items-center gap-0.5 text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold">
                             <span>أوروبية 94%+</span>
                           </span>
                         )}
@@ -171,8 +171,8 @@ export default function SignalsFeed({
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-extrabold ${
                           isCall
-                            ? "bg-bento-green/10 text-bento-green"
-                            : "bg-bento-red/10 text-bento-red"
+                            ? "bg-emerald-500/10 text-emerald-400"
+                            : "bg-red-500/10 text-red-500"
                         }`}
                       >
                         {isCall ? (
@@ -196,14 +196,14 @@ export default function SignalsFeed({
                   </div>
 
                   {/* Signal Stats Detail */}
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-[#050505]/40 p-2 rounded-lg my-2 text-center text-sm border border-slate-100 dark:border-white/5">
+                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-[#0a0612]/40 p-2 rounded-lg my-2 text-center text-sm border border-slate-100 dark:border-white/5">
                     <div>
                       <span className="text-sm text-slate-500 dark:text-[#999999] block">سعر الدخول</span>
                       <span className="font-mono font-bold text-slate-600 dark:text-slate-300">{signal.entryPrice}</span>
                     </div>
                     <div>
                       <span className="text-sm text-slate-500 dark:text-[#999999] block">توافق أوروبي</span>
-                      <span className={`font-bold font-mono text-lg md:text-xl ${isVip ? "text-amber-400 flex items-center justify-center gap-0.5" : "text-bento-green"}`}>
+                      <span className={`font-bold font-mono text-lg md:text-xl ${isVip ? "text-amber-400 flex items-center justify-center gap-0.5" : "text-emerald-400"}`}>
                         {isVip && <Sparkles className="w-4 h-4 text-amber-400" />}
                         {signal.strength}%
                       </span>
@@ -217,10 +217,10 @@ export default function SignalsFeed({
                   </div>
 
                   {/* Live countdown visual progress bar */}
-                  <div className="w-full bg-slate-50 dark:bg-[#050505] h-1.5 rounded-full overflow-hidden mt-1 relative border border-slate-100 dark:border-white/5">
+                  <div className="w-full bg-slate-50 dark:bg-[#0a0612] h-1.5 rounded-full overflow-hidden mt-1 relative border border-slate-100 dark:border-white/5">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ease-linear ${
-                        isVip ? "bg-gradient-to-r from-amber-500 to-yellow-400" : (isCall ? "bg-bento-green" : "bg-bento-red")
+                        isVip ? "bg-gradient-to-r from-amber-500 to-yellow-400" : (isCall ? "bg-emerald-500" : "bg-red-500")
                       }`}
                       style={{ width: `${progressPercentage}%` }}
                     ></div>
@@ -242,7 +242,7 @@ export default function SignalsFeed({
             </div>
             <button
               onClick={onClearHistory}
-              className="text-sm text-bento-red hover:text-bento-red/80 font-bold cursor-pointer"
+              className="text-sm text-red-500 hover:text-red-500/80 font-bold cursor-pointer"
               id="btn-clear-history"
             >
               مسح السجل
@@ -270,7 +270,7 @@ export default function SignalsFeed({
                       <td className="py-2.5 font-bold text-slate-600 dark:text-slate-300">{hist.assetNameAr}</td>
                       <td className="py-2.5 font-mono text-slate-500 dark:text-[#999999]">{hist.timeframe}</td>
                       <td className="py-2.5">
-                        <span className={`font-semibold ${hist.recommendation === "أعلى" ? "text-bento-green" : "text-bento-red"}`}>
+                        <span className={`font-semibold ${hist.recommendation === "أعلى" ? "text-emerald-400" : "text-red-500"}`}>
                           {hist.recommendation}
                         </span>
                       </td>
@@ -283,13 +283,13 @@ export default function SignalsFeed({
                             {hist.strength}%
                           </span>
                         ) : (
-                          <span className="text-bento-green font-medium">{hist.strength}%</span>
+                          <span className="text-emerald-400 font-medium">{hist.strength}%</span>
                         )}
                       </td>
                       <td className="py-2.5 text-left">
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-sm font-extrabold ${
-                            isWin ? "bg-bento-green/10 text-bento-green" : "bg-bento-red/10 text-bento-red"
+                            isWin ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-500"
                           }`}
                         >
                           {isWin ? (
