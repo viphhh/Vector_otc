@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Signal } from "../types";
-import { CheckCircle2, XCircle, Clock, TrendingUp, TrendingDown, RefreshCw, Layers, Bell, Sparkles, Filter, EyeOff } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, TrendingUp, TrendingDown, RefreshCw, Layers, Bell, Sparkles, Filter, EyeOff, GraduationCap, HelpCircle } from "lucide-react";
 
 interface SignalsFeedProps {
   signals: Signal[];
@@ -10,6 +10,7 @@ interface SignalsFeedProps {
   selectedAssets?: { id: string; nameAr: string }[];
   onToggleHide?: () => void;
   platformName?: string;
+  onOpenAcademy?: () => void;
 }
 
 export default function SignalsFeed({
@@ -19,6 +20,7 @@ export default function SignalsFeed({
   selectedAssets,
   onToggleHide,
   platformName,
+  onOpenAcademy,
 }: SignalsFeedProps) {
   const [filterAssetId, setFilterAssetId] = useState<string>("all");
 
@@ -43,7 +45,19 @@ export default function SignalsFeed({
             <h3 className="font-bold text-slate-900 dark:text-white text-sm">الاشارات النشطة الحالية</h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm bg-slate-50 dark:bg-[#0a0612]/50 text-slate-500 dark:text-[#999999] px-2.5 py-1 rounded-lg border border-slate-100 dark:border-white/5 font-mono">
+            {onOpenAcademy && (
+              <button
+                onClick={onOpenAcademy}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-purple-600/20 via-fuchsia-600/20 to-emerald-600/20 hover:from-purple-600/30 hover:to-emerald-600/30 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+                title="دليل شرح قراءة الإشارات والتوافق الثلاثي (EMA / STOCH / BB)"
+                id="btn-feed-open-academy"
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">كيف تقرأ الإشارات؟ 🎓</span>
+                <span className="sm:hidden">شرح 🎓</span>
+              </button>
+            )}
+            <span className="text-sm bg-slate-50 dark:bg-theme-deep/50 text-slate-500 dark:text-[#999999] px-2.5 py-1 rounded-lg border border-slate-100 dark:border-white/5 font-mono">
               النشطة حالياً: {activeSignals.length}
             </span>
             {onToggleHide && (
@@ -71,7 +85,7 @@ export default function SignalsFeed({
               className={`px-2.5 py-1 rounded-lg text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0 ${
                 filterAssetId === "all"
                   ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
-                  : "bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
+                  : "bg-slate-50 dark:bg-theme-deep border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
               }`}
             >
               الكل
@@ -83,7 +97,7 @@ export default function SignalsFeed({
                 className={`px-2.5 py-1 rounded-lg text-sm font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0 ${
                   filterAssetId === opt.id
                     ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
-                    : "bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
+                    : "bg-slate-50 dark:bg-theme-deep border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:border-white/20 hover:text-slate-900 dark:text-white"
                 }`}
               >
                 {opt.nameAr}
@@ -129,7 +143,7 @@ export default function SignalsFeed({
                       : (isCall ? "rgba(74, 222, 128, 0.2)" : "rgba(248, 113, 113, 0.2)")
                   }}
                   transition={{ duration: 1.5, ease: "easeOut" }}
-                  className={`bg-slate-50 dark:bg-[#0a0612]/50 border rounded-xl p-4 flex flex-col justify-between shadow-lg relative ${
+                  className={`bg-slate-50 dark:bg-theme-deep/50 border rounded-xl p-4 flex flex-col justify-between shadow-lg relative ${
                     isVip 
                       ? "border-amber-500/40 hover:border-amber-400/70" 
                       : (isCall ? "hover:border-emerald-500/40" : "hover:border-red-500/40")
@@ -143,7 +157,7 @@ export default function SignalsFeed({
                         <span className="font-bold text-slate-700 dark:text-slate-200 text-sm md:text-base">
                           {signal.assetNameAr}
                         </span>
-                        <span className="text-sm bg-slate-50 dark:bg-[#0a0612] text-slate-500 dark:text-[#999999] px-1.5 py-0.5 rounded border border-slate-100 dark:border-white/5 font-semibold font-mono">
+                        <span className="text-sm bg-slate-50 dark:bg-theme-deep text-slate-500 dark:text-[#999999] px-1.5 py-0.5 rounded border border-slate-100 dark:border-white/5 font-semibold font-mono">
                           {signal.timeframe}
                         </span>
                         {platformName && (
@@ -189,14 +203,19 @@ export default function SignalsFeed({
                   </div>
 
                   {/* European Confluence Micro-Badges */}
-                  <div className="flex items-center gap-1 my-1 text-[9px] text-slate-500 dark:text-slate-400 font-mono">
-                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-[#38BDF8] border border-[#38BDF8]/20">EMA 8/21/55</span>
-                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-purple-300 border border-purple-500/20">Stoch 5/3/3</span>
-                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-amber-300 border border-amber-500/20">BB (20,2)</span>
+                  <div
+                    onClick={onOpenAcademy}
+                    className="flex items-center gap-1 my-1 text-[9px] text-slate-500 dark:text-slate-400 font-mono cursor-pointer hover:opacity-90 transition-opacity"
+                    title="اضغط لمعرفة شرح مؤشرات التوافق الثلاثي (EMA / STOCH / BB)"
+                  >
+                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-[#38BDF8] border border-[#38BDF8]/20 hover:border-[#38BDF8]">EMA 8/21/55</span>
+                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-purple-300 border border-purple-500/20 hover:border-purple-500">Stoch 5/3/3</span>
+                    <span className="bg-slate-100 dark:bg-[#141414] px-1.5 py-0.5 rounded text-amber-300 border border-amber-500/20 hover:border-amber-500">BB (20,2)</span>
+                    <HelpCircle className="w-3 h-3 text-purple-400/80 mr-0.5" />
                   </div>
 
                   {/* Signal Stats Detail */}
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-[#0a0612]/40 p-2 rounded-lg my-2 text-center text-sm border border-slate-100 dark:border-white/5">
+                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-theme-deep/40 p-2 rounded-lg my-2 text-center text-sm border border-slate-100 dark:border-white/5">
                     <div>
                       <span className="text-sm text-slate-500 dark:text-[#999999] block">سعر الدخول</span>
                       <span className="font-mono font-bold text-slate-600 dark:text-slate-300">{signal.entryPrice}</span>
@@ -217,7 +236,7 @@ export default function SignalsFeed({
                   </div>
 
                   {/* Live countdown visual progress bar */}
-                  <div className="w-full bg-slate-50 dark:bg-[#0a0612] h-1.5 rounded-full overflow-hidden mt-1 relative border border-slate-100 dark:border-white/5">
+                  <div className="w-full bg-slate-50 dark:bg-theme-deep h-1.5 rounded-full overflow-hidden mt-1 relative border border-slate-100 dark:border-white/5">
                     <div
                       className={`h-full rounded-full transition-all duration-1000 ease-linear ${
                         isVip ? "bg-gradient-to-r from-amber-500 to-yellow-400" : (isCall ? "bg-emerald-500" : "bg-red-500")

@@ -31,7 +31,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="bg-slate-100 dark:bg-[#140b2e] border border-white/15 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative"
+        className="bg-slate-100 dark:bg-theme-card border border-white/15 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative"
         id="european-strategy-modal"
       >
         {/* Glow accent */}
@@ -110,7 +110,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
           {activeTab === "rules" && (
             <div className="space-y-6">
               {/* Call Rule */}
-              <div className="bg-[#1e143f] border border-emerald-500/30 rounded-2xl p-5 relative overflow-hidden">
+              <div className="bg-theme-input border border-emerald-500/30 rounded-2xl p-5 relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="p-1.5 bg-emerald-500/20 text-emerald-500 rounded-lg">
                     <ArrowUpRight className="w-5 h-5" />
@@ -155,7 +155,7 @@ export default function EuropeanStrategyGuide({ isOpen, onClose }: EuropeanStrat
               </div>
 
               {/* Put Rule */}
-              <div className="bg-[#1e143f] border border-red-500/30 rounded-2xl p-5 relative overflow-hidden">
+              <div className="bg-theme-input border border-red-500/30 rounded-2xl p-5 relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="p-1.5 bg-red-500/20 text-red-500 rounded-lg">
                     <ArrowDownRight className="w-5 h-5" />

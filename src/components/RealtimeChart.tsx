@@ -492,12 +492,12 @@ export default function RealtimeChart({
   }, [prices, dimensions, asset, activeEntryPrice, activeRecommendation, showEuropeanStrategy, showEMARibbon, showBollinger, decimalDigits]);
 
   return (
-    <div className="relative w-full h-full bg-slate-100 dark:bg-[#140b2e] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col justify-between" id="realtime-chart-card">
+    <div className="relative w-full h-full bg-slate-100 dark:bg-theme-card rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col justify-between" id="realtime-chart-card">
       {/* Top Header HUD overlay */}
       <div className="absolute top-3 right-3 left-3 flex flex-wrap justify-between items-center gap-2 pointer-events-none z-10">
         {/* Left/Right live asset info */}
         <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="flex items-center space-x-2 space-x-reverse bg-slate-50 dark:bg-[#0a0612]/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
+          <div className="flex items-center space-x-2 space-x-reverse bg-slate-50 dark:bg-theme-deep/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
             <span className="w-2 h-2 bg-purple-500 rounded-full animate-ping"></span>
             <span className="w-2 h-2 bg-purple-500 rounded-full absolute"></span>
             <span className="text-xs text-slate-700 dark:text-slate-200 font-bold mr-1">{asset?.nameAr ?? ""}</span>
@@ -511,7 +511,7 @@ export default function RealtimeChart({
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all duration-200 cursor-pointer shadow-md ${
                   showEuropeanStrategy
                     ? "bg-purple-500/15 border-purple-500/40 text-purple-500 hover:bg-purple-500/20"
-                    : "bg-slate-50 dark:bg-[#0a0612]/80 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-white/5"
+                    : "bg-slate-50 dark:bg-theme-deep/80 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-white/5"
                 }`}
                 id="toggle-european-strategy-button"
                 title="إظهار / إخفاء مؤشرات الاستراتيجية الأوروبية (EMA Ribbon 8/21/55 + Bollinger Bands + Stochastic)"
@@ -527,7 +527,7 @@ export default function RealtimeChart({
 
               {/* Sub-toggles for EMA Ribbon and Bollinger Bands */}
               {showEuropeanStrategy && (
-                <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 dark:bg-[#0a0612]/90 backdrop-blur-md px-2 py-1 rounded-xl border border-slate-200 dark:border-white/10">
+                <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 dark:bg-theme-deep/90 backdrop-blur-md px-2 py-1 rounded-xl border border-slate-200 dark:border-white/10">
                   <button
                     onClick={() => setShowEMARibbon((v) => !v)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-colors cursor-pointer ${
@@ -574,7 +574,7 @@ export default function RealtimeChart({
             </div>
           )}
 
-          <div className="bg-slate-50 dark:bg-[#0a0612]/85 backdrop-blur-md px-3 py-1.5 text-xs font-mono font-bold text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
+          <div className="bg-slate-50 dark:bg-theme-deep/85 backdrop-blur-md px-3 py-1.5 text-xs font-mono font-bold text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
             {prices.length > 0 && typeof prices[prices.length - 1] === "number"
               ? prices[prices.length - 1].toFixed(decimalDigits)
               : "0.00"}
@@ -589,7 +589,7 @@ export default function RealtimeChart({
 
       {/* Bottom Chart Legend HUD & Stochastic Indicator */}
       {showIndicatorControls && showEuropeanStrategy && (
-        <div className="absolute bottom-2.5 right-3 left-3 flex flex-wrap items-center justify-between pointer-events-none text-[10px] text-slate-600 dark:text-slate-300 font-mono bg-slate-50 dark:bg-[#0a0612]/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 gap-2">
+        <div className="absolute bottom-2.5 right-3 left-3 flex flex-wrap items-center justify-between pointer-events-none text-[10px] text-slate-600 dark:text-slate-300 font-mono bg-slate-50 dark:bg-theme-deep/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 gap-2">
           <div className="flex items-center gap-3 flex-wrap">
             {showEMARibbon && (
               <>

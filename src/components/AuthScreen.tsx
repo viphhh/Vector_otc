@@ -21,9 +21,9 @@ export default function AuthScreen() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a0612] text-white flex items-center justify-center p-4 selection:bg-cyan-500/30" dir="rtl">
-        <div className="w-full max-w-md bg-[#0a0612] border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
-          <div className="mx-auto w-20 h-20 rounded-2xl bg-[#140b2e] border border-cyan-500/40 p-1 mb-6 shadow-lg shadow-cyan-500/10">
+      <div className="min-h-screen bg-theme-deep text-white flex items-center justify-center p-4 selection:bg-cyan-500/30" dir="rtl">
+        <div className="w-full max-w-md bg-theme-deep border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-theme-card border border-cyan-500/40 p-1 mb-6 shadow-lg shadow-cyan-500/10">
             <img src={vectorLogo} alt="Logo" className="w-full h-full object-cover rounded-xl" />
           </div>
           <h1 className="text-2xl font-bold mb-2">تسجيل الدخول إلى المنصة</h1>
@@ -89,8 +89,8 @@ export default function AuthScreen() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#0a0612] text-white flex flex-col items-center justify-center p-4 selection:bg-cyan-500/30" dir="rtl">
-        <div className="w-full max-w-md bg-[#0a0612] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div className="min-h-screen bg-theme-deep text-white flex flex-col items-center justify-center p-4 selection:bg-cyan-500/30" dir="rtl">
+        <div className="w-full max-w-md bg-theme-deep border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/30">
               <UserPlus className="w-6 h-6 text-cyan-400" />
@@ -135,7 +135,7 @@ export default function AuthScreen() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full bg-[#140b2e] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                className="w-full bg-theme-card border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
                 placeholder="أحمد محمد"
               />
             </div>
@@ -157,7 +157,7 @@ export default function AuthScreen() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-                className="w-full bg-[#140b2e] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                className="w-full bg-theme-card border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
                 placeholder="+966 5X XXX XXXX"
                 dir="ltr"
               />
@@ -170,7 +170,7 @@ export default function AuthScreen() {
                 type="text"
                 value={formData.country}
                 onChange={(e) => setFormData((prev) => ({ ...prev, country: e.target.value }))}
-                className="w-full bg-[#140b2e] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                className="w-full bg-theme-card border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
                 placeholder="السعودية، مصر، الإمارات..."
               />
             </div>
@@ -206,7 +206,7 @@ export default function AuthScreen() {
 
   if (profile.status === 'pending') {
     return (
-      <div className="min-h-screen bg-[#0a0612] text-white flex flex-col items-center justify-center p-4 text-center" dir="rtl">
+      <div className="min-h-screen bg-theme-deep text-white flex flex-col items-center justify-center p-4 text-center" dir="rtl">
         <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/30 rounded-full flex items-center justify-center mb-6">
           <Clock className="w-10 h-10 text-amber-400 animate-pulse" />
         </div>
@@ -215,7 +215,7 @@ export default function AuthScreen() {
           أهلاً <span className="text-white font-semibold">{profile.name}</span>، لقد تم استلام بياناتك بنجاح. سيقوم المشرف بمراجعة طلبك وتفعيله في أقرب وقت.
         </p>
 
-        <div className="bg-[#0a0612] border border-white/5 rounded-2xl p-4 w-full max-w-sm mb-6 text-right text-xs space-y-2">
+        <div className="bg-theme-deep border border-white/5 rounded-2xl p-4 w-full max-w-sm mb-6 text-right text-xs space-y-2">
           <div className="flex justify-between text-slate-400">
             <span>البريد الإلكتروني:</span>
             <span className="text-slate-200 font-mono">{profile.email}</span>
@@ -258,7 +258,7 @@ export default function AuthScreen() {
 
   if (profile.status === 'rejected') {
     return (
-      <div className="min-h-screen bg-[#0a0612] text-white flex flex-col items-center justify-center p-4 text-center" dir="rtl">
+      <div className="min-h-screen bg-theme-deep text-white flex flex-col items-center justify-center p-4 text-center" dir="rtl">
         <div className="w-20 h-20 bg-rose-500/10 border border-rose-500/30 rounded-full flex items-center justify-center mb-6">
           <AlertTriangle className="w-10 h-10 text-rose-400" />
         </div>

@@ -6,40 +6,142 @@
 @theme {
   --font-sans: "Cairo", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --color-bento-bg: #f8fafc;
-  --color-bento-card: #ffffff;
+  --color-bento-bg: var(--bg-deep, #f8fafc);
+  --color-bento-card: var(--bg-card, #ffffff);
   --color-bento-green: #a855f7; /* Purple */ /* Vivid Neon Cyber Green (CALL / Wins) */
   --color-bento-blue: #0088FF;  /* Pocket Option Electric Blue (Brand / High-Tech) */
   --color-bento-red: #FF3366;   /* Laser Crimson Red (PUT / Losses) */
   --color-bento-fusion: #0088FF;
   --color-bento-border: rgba(0, 0, 0, 0.1);
+  
+  --color-theme-deep: var(--bg-deep, #0a0612);
+  --color-theme-card: var(--bg-card, #140b2e);
+  --color-theme-input: var(--bg-input, #1e143f);
+  --color-theme-hover: var(--bg-hover, #291a54);
+}
+
+:root {
+  --bg-deep: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #f1f5f9;
+  --bg-hover: #e2e8f0;
+  
+  /* Fallback gradients if not set */
+  --grad-c1: rgba(168, 85, 247, 0.04);
+  --grad-c2: rgba(217, 70, 239, 0.03);
+  --grad-c3: rgba(16, 185, 129, 0.03);
 }
 
 .dark {
-  --color-bento-bg: #0a0612;
-  --color-bento-card: #140b2e;
+  --bg-deep: #0a0612;
+  --bg-card: #140b2e;
+  --bg-input: #1e143f;
+  --bg-hover: #291a54;
   --color-bento-border: rgba(255, 255, 255, 0.08);
+
+  --grad-c1: rgba(168, 85, 247, 0.08);
+  --grad-c2: rgba(217, 70, 239, 0.06);
+  --grad-c3: rgba(16, 185, 129, 0.06);
+}
+
+/* Theme 2: Orange & Blue (البرتقالي والأزرق) */
+[data-theme="orange"] {
+  --bg-deep: #050b14; 
+  --bg-card: #0a192f;
+  --bg-input: #112240;
+  --bg-hover: #1e3a8a;
+  
+  --color-purple-200: var(--color-orange-200);
+  --color-purple-400: var(--color-orange-400);
+  --color-purple-500: var(--color-orange-500);
+  --color-purple-600: var(--color-orange-600);
+  --color-purple-800: var(--color-orange-800);
+  --color-purple-900: var(--color-orange-900);
+
+  --color-fuchsia-200: var(--color-blue-200);
+  --color-fuchsia-300: var(--color-blue-300);
+  --color-fuchsia-400: var(--color-blue-400);
+  --color-fuchsia-500: var(--color-blue-500);
+  --color-fuchsia-600: var(--color-blue-600);
+  --color-fuchsia-900: var(--color-blue-900);
+
+  --color-emerald-300: var(--color-sky-300);
+  --color-emerald-400: var(--color-sky-400);
+  --color-emerald-500: var(--color-sky-500);
+  --color-emerald-600: var(--color-sky-600);
+
+  --grad-c1: rgba(249, 115, 22, 0.08); /* orange */
+  --grad-c2: rgba(59, 130, 246, 0.06); /* blue */
+  --grad-c3: rgba(14, 165, 233, 0.06); /* sky */
+}
+
+/* Theme 3: Night Sea & Green (ليلي بحري وأخضر) */
+[data-theme="sea"] {
+  --bg-deep: #021015; 
+  --bg-card: #062029;
+  --bg-input: #0a303c;
+  --bg-hover: #134e4a;
+  
+  --color-purple-200: var(--color-cyan-200);
+  --color-purple-400: var(--color-cyan-400);
+  --color-purple-500: var(--color-cyan-500);
+  --color-purple-600: var(--color-cyan-600);
+  --color-purple-800: var(--color-cyan-800);
+  --color-purple-900: var(--color-cyan-900);
+
+  --color-fuchsia-200: var(--color-teal-200);
+  --color-fuchsia-300: var(--color-teal-300);
+  --color-fuchsia-400: var(--color-teal-400);
+  --color-fuchsia-500: var(--color-teal-500);
+  --color-fuchsia-600: var(--color-teal-600);
+  --color-fuchsia-900: var(--color-teal-900);
+  
+  --grad-c1: rgba(6, 182, 212, 0.08); /* cyan */
+  --grad-c2: rgba(20, 184, 166, 0.06); /* teal */
+  --grad-c3: rgba(16, 185, 129, 0.06); /* emerald */
+}
+
+/* Theme 4: Gold & Black (ملكي ذهبي وأسود) */
+[data-theme="gold"] {
+  --bg-deep: #0a0a0a;
+  --bg-card: #171717;
+  --bg-input: #262626;
+  --bg-hover: #404040;
+  
+  --color-purple-200: var(--color-yellow-200);
+  --color-purple-400: var(--color-yellow-400);
+  --color-purple-500: var(--color-yellow-500);
+  --color-purple-600: var(--color-yellow-600);
+  --color-purple-800: var(--color-yellow-800);
+  --color-purple-900: var(--color-yellow-900);
+
+  --color-fuchsia-200: var(--color-amber-200);
+  --color-fuchsia-300: var(--color-amber-300);
+  --color-fuchsia-400: var(--color-amber-400);
+  --color-fuchsia-500: var(--color-amber-500);
+  --color-fuchsia-600: var(--color-amber-600);
+  --color-fuchsia-900: var(--color-amber-900);
+  
+  --grad-c1: rgba(234, 179, 8, 0.08); /* yellow */
+  --grad-c2: rgba(245, 158, 11, 0.06); /* amber */
+  --grad-c3: rgba(251, 191, 36, 0.06); /* amber-400 */
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-bento-bg);
+  background-color: var(--bg-deep);
   color: #0f172a;
   direction: rtl; /* Set default text direction to Right-to-Left for Arabic */
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 85% 25%, rgba(217, 70, 239, 0.03) 0%, transparent 35%),
-    radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
+    radial-gradient(circle at 15% 15%, var(--grad-c1) 0%, transparent 40%),
+    radial-gradient(circle at 85% 25%, var(--grad-c2) 0%, transparent 35%),
+    radial-gradient(circle at 50% 85%, var(--grad-c3) 0%, transparent 40%);
   background-attachment: fixed;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark body {
   color: #ffffff;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 25%, rgba(217, 70, 239, 0.06) 0%, transparent 35%),
-    radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
 }
 
 /* Tri-Color Aurora Shimmer */

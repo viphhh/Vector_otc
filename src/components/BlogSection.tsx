@@ -318,14 +318,14 @@ export function BlogSection({ isOpen, onClose }: BlogSectionProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
       <div 
-        className="relative w-full max-w-6xl bg-[#0a0612] border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[96vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-6xl bg-theme-deep border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[96vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
         id="blog-main-container"
       >
         {/* Top Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-6 py-4 border-b border-purple-500/20 bg-[#140b2e]/95 backdrop-blur sticky top-0 z-30">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-6 py-4 border-b border-purple-500/20 bg-theme-card/95 backdrop-blur sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 via-fuchsia-600 to-pink-600 p-0.5 shadow-lg shadow-fuchsia-500/20 flex-shrink-0">
-              <div className="w-full h-full bg-[#0a0612] rounded-[14px] flex items-center justify-center text-fuchsia-400">
+              <div className="w-full h-full bg-theme-deep rounded-[14px] flex items-center justify-center text-fuchsia-400">
                 <BookOpen className="w-6 h-6" />
               </div>
             </div>
@@ -386,7 +386,7 @@ export function BlogSection({ isOpen, onClose }: BlogSectionProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث عن مقال، استراتيجية، مؤشر (مثال: الذهب، ستوكاستيك، سكالبنج)..."
-                className="w-full pr-10 pl-4 py-2 rounded-xl bg-[#140b2e] border border-purple-500/25 text-white placeholder:text-slate-500 text-xs md:text-sm focus:outline-none focus:border-fuchsia-400 transition-colors"
+                className="w-full pr-10 pl-4 py-2 rounded-xl bg-theme-card border border-purple-500/25 text-white placeholder:text-slate-500 text-xs md:text-sm focus:outline-none focus:border-fuchsia-400 transition-colors"
               />
               {searchQuery && (
                 <button
@@ -501,7 +501,7 @@ export function BlogSection({ isOpen, onClose }: BlogSectionProps) {
               {filteredArticles.map((art) => (
                 <article
                   key={art.id}
-                  className="bg-[#140b2e] border border-purple-500/20 hover:border-fuchsia-500/40 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 group"
+                  className="bg-theme-card border border-purple-500/20 hover:border-fuchsia-500/40 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 group"
                 >
                   {/* Cover */}
                   <div 
@@ -514,11 +514,11 @@ export function BlogSection({ isOpen, onClose }: BlogSectionProps) {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#140b2e] via-transparent to-transparent opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-theme-card via-transparent to-transparent opacity-90" />
                     
                     {/* Category pill */}
                     <div className="absolute top-3 right-3">
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#0a0612]/80 backdrop-blur text-fuchsia-300 border border-fuchsia-500/30">
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-theme-deep/80 backdrop-blur text-fuchsia-300 border border-fuchsia-500/30">
                         {art.category}
                       </span>
                     </div>
@@ -611,7 +611,7 @@ export function BlogSection({ isOpen, onClose }: BlogSectionProps) {
         </div>
 
         {/* Footer Summary / Quick Info */}
-        <div className="px-6 py-3 border-t border-purple-500/20 bg-[#140b2e]/90 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="px-6 py-3 border-t border-purple-500/20 bg-theme-card/90 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>يتم تحديث مقالات المدونة وتحليلات السكالبنج دورياً بواسطة كبار خبراء التداول.</span>

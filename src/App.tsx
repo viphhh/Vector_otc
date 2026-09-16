@@ -9,6 +9,7 @@ import { PlatformSelector, TRADING_PLATFORMS } from "./components/PlatformSelect
 import AdminUsersPanel from "./components/AdminUsersPanel";
 import { BlogSection } from "./components/BlogSection";
 import { SeoManagementModal } from "./components/SeoManagementModal";
+import { SignalsEducationAcademy } from "./components/SignalsEducationAcademy";
 import { loadStoredSeo, applySeoToDom } from "./utils/seoHelper";
 import { useAuth } from "./contexts/AuthContext";
 import { TradingPlatform } from "./types";
@@ -51,6 +52,7 @@ import {
   Newspaper,
   ArrowLeft,
   Globe,
+  GraduationCap,
 } from "lucide-react";
 
 // Predefined available assets (Forex, OTC & Commodities with real-world live pricing)
@@ -415,6 +417,17 @@ export default function App() {
   const [telegramChatId, setTelegramChatId] = useState<string>(() => localStorage.getItem("telegram_chat_id") || "");
   const [telegramEnabled, setTelegramEnabled] = useState<boolean>(() => localStorage.getItem("telegram_enabled") === "true");
 
+  // Theme settings
+  type ThemeName = "default" | "orange" | "sea" | "gold";
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => {
+    return (localStorage.getItem("app_theme") as ThemeName) || "default";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    localStorage.setItem("app_theme", currentTheme);
+  }, [currentTheme]);
+
   // Selected Simulated Trading Platform
   const [currentPlatform, setCurrentPlatform] = useState<TradingPlatform>(() => {
     const savedId = localStorage.getItem("selected_trading_platform");
@@ -430,6 +443,7 @@ export default function App() {
   const [aiAnalyses, setAiAnalyses] = useState<Record<string, AIAnalysis>>({});
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [isStrategyGuideOpen, setIsStrategyGuideOpen] = useState<boolean>(false);
+  const [isAcademyOpen, setIsAcademyOpen] = useState<boolean>(false);
   const [isBlogOpen, setIsBlogOpen] = useState<boolean>(false);
   const [isSeoModalOpen, setIsSeoModalOpen] = useState<boolean>(false);
 
@@ -449,6 +463,63 @@ export default function App() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const pricesByAssetRef = useRef<Record<string, number[]>>(pricesByAsset);
   pricesByAssetRef.current = pricesByAsset;
+
+  // ForexRateAPI Integration
+  useEffect(() => {
+    const fetchForexRates = async () => {
+      try {
+        // SECURITY WARNING: In a production environment, this key should be moved to a backend proxy server
+        // to prevent exposing it in the client-side JavaScript bundle.
+        const apiKey = "2500e5df4ca093326f503febd47f3ec6";
+        const response = await fetch(`https://api.forexrateapi.com/v1/latest?api_key=${apiKey}&base=USD`);
+        const data = await response.json();
+        
+        if (data && data.success && data.rates) {
+          const rates = { ...data.rates, USD: 1 }; // Inject USD as base 1 for cross rates
+          
+          setLivePrices(prev => {
+            const newPrices = { ...prev };
+            let hasChanges = false;
+
+            AVAILABLE_ASSETS.forEach(asset => {
+              const parts = asset.id.split('_');
+              if (parts.length >= 2) {
+                const baseCurrency = parts[0].toUpperCase();
+                const quoteCurrency = parts[1].toUpperCase();
+                
+                if (rates[baseCurrency] && rates[quoteCurrency]) {
+                  // Forex cross rate from USD base: (USD/Quote) / (USD/Base)
+                  const actualPrice = rates[quoteCurrency] / rates[baseCurrency];
+                  if (newPrices[asset.id] !== actualPrice) {
+                    newPrices[asset.id] = actualPrice;
+                    hasChanges = true;
+                  }
+                }
+              }
+            });
+            
+            return hasChanges ? newPrices : prev;
+          });
+          
+          // Update sync time format
+          const now = new Date();
+          setLastLiveSyncTime(now.toLocaleTimeString("ar-SA", { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' }));
+          setIsLiveConnected(true);
+        } else {
+          setIsLiveConnected(false);
+        }
+      } catch (error) {
+        console.error("ForexRateAPI fetch error:", error);
+        setIsLiveConnected(false);
+      }
+    };
+
+    // Initial fetch
+    fetchForexRates();
+    // Refresh rates every 60 seconds
+    const interval = setInterval(fetchForexRates, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const signalsRef = useRef<Signal[]>([]);
   signalsRef.current = signals;
@@ -955,13 +1026,13 @@ export default function App() {
     selectedAssets.find((a) => a.id === activeFocusedAssetId) || selectedAssets[0] || AVAILABLE_ASSETS[0];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0612] text-slate-900 dark:text-white flex flex-col justify-between selection:bg-purple-500/30 font-sans" id="deriv-signals-root">
+    <div className="min-h-screen bg-slate-50 dark:bg-theme-deep text-slate-900 dark:text-white flex flex-col justify-between selection:bg-purple-500/30 font-sans" id="deriv-signals-root">
       {/* Top Navbar */}
       <header className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 px-2 sm:px-6 py-4 shadow-2xl">
         <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-3">
           {/* Logo & Brand */}
           <div className="flex items-center space-x-3 space-x-reverse">
-            <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-[#140b2e] border border-fuchsia-500/30 shadow-lg shadow-fuchsia-500/20 overflow-hidden group">
+            <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-theme-card border border-fuchsia-500/30 shadow-lg shadow-fuchsia-500/20 overflow-hidden group">
               <img
                 src={vectorLogo}
                 alt="Vector OTC Logo"
@@ -983,6 +1054,25 @@ export default function App() {
 
           {/* Quick HUD status info & Platform Selector */}
           <div className="flex items-center space-x-3 space-x-reverse flex-wrap gap-2 sm:gap-0">
+            {/* Theme Selector */}
+            <div className="relative group">
+              <select
+                value={currentTheme}
+                onChange={(e) => setCurrentTheme(e.target.value as ThemeName)}
+                className="appearance-none bg-theme-input/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl px-3 py-1.5 pr-8 focus:outline-none focus:border-purple-500/50 cursor-pointer transition-colors"
+              >
+                <option value="default">ثيم البنفسجي والأسود (الافتراضي) 💜</option>
+                <option value="orange">ثيم البرتقالي والأزرق (ملهم) 🌅</option>
+                <option value="sea">ثيم ليلي ولون البحر (هادئ) 🌊</option>
+                <option value="gold">ثيم ملكي ذهبي وأسود (فاخر) 👑</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
+
             {/* Live Real-time Price Feed Indicator */}
             <div
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-bold shadow-sm transition-all ${
@@ -1010,6 +1100,17 @@ export default function App() {
               currentPlatform={currentPlatform}
               onSelectPlatform={handleSelectPlatform}
             />
+
+            {/* Signals Education Academy Button */}
+            <button
+              onClick={() => setIsAcademyOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-gradient-to-r from-emerald-600/20 via-teal-600/20 to-emerald-600/20 hover:from-emerald-600/30 hover:to-teal-600/30 text-emerald-300 hover:text-white hover:border-emerald-400 text-sm font-bold transition-all duration-300 cursor-pointer active:scale-95 shadow-sm shadow-emerald-500/10"
+              id="btn-open-academy"
+              title="أكاديمية شرح قراءة الإشارات والتوافق الثلاثي (EMA, Stochastic, Bollinger Bands)"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
+              <span>أكاديمية قراءة الإشارات 🎓✨</span>
+            </button>
 
             {/* European Strategy Guide Button */}
             <button
@@ -1091,8 +1192,8 @@ export default function App() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
                 theme === "dark"
-                  ? "bg-slate-100 dark:bg-[#140b2e] border-slate-200 dark:border-white/10 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-[#140b2e]/80"
-                  : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:hover:bg-[#140b2e]"
+                  ? "bg-slate-100 dark:bg-theme-card border-slate-200 dark:border-white/10 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-theme-card/80"
+                  : "bg-slate-50 dark:bg-theme-deep border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:hover:bg-theme-card"
               }`}
               title={theme === "dark" ? "تفعيل الوضع النهاري" : "تفعيل الوضع الليلي"}
             >
@@ -1104,8 +1205,8 @@ export default function App() {
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
                 soundEnabled
-                  ? "bg-slate-100 dark:bg-[#140b2e] border-slate-200 dark:border-white/10 text-purple-500 hover:bg-slate-100 dark:bg-[#140b2e]/80"
-                  : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:bg-[#140b2e]"
+                  ? "bg-slate-100 dark:bg-theme-card border-slate-200 dark:border-white/10 text-purple-500 hover:bg-slate-100 dark:bg-theme-card/80"
+                  : "bg-slate-50 dark:bg-theme-deep border-slate-100 dark:border-white/5 text-slate-500 dark:text-[#999999] hover:bg-slate-100 dark:bg-theme-card"
               }`}
               title={soundEnabled ? "كتم أصوات الإشارات" : "تشغيل أصوات الإشارات"}
               id="btn-toggle-sound"
@@ -1140,7 +1241,7 @@ export default function App() {
                   className={`px-3 py-1.5 rounded-xl border text-sm font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer active:scale-95 ${
                     isSelected
                       ? "bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-300 shadow-md shadow-fuchsia-500/20"
-                      : "bg-[#0a0612] border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-white/25 hover:bg-slate-100 dark:bg-white/5"
+                      : "bg-theme-deep border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-white/25 hover:bg-slate-100 dark:bg-white/5"
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-fuchsia-400 animate-ping" : "bg-white/20"}`}></span>
@@ -1159,11 +1260,12 @@ export default function App() {
             onClearHistory={() => setCompletedHistory([])}
             selectedAssets={selectedAssets}
             platformName={currentPlatform.nameAr}
+            onOpenAcademy={() => setIsAcademyOpen(true)}
           />
         )}
 
         {/* Fixed Asset Selection Grid */}
-        <div className="bg-[#140b2e] dark:bg-[#0a0612] border border-slate-200 dark:border-white/5 rounded-2xl p-4 shadow-xl relative">
+        <div className="bg-theme-card dark:bg-theme-deep border border-slate-200 dark:border-white/5 rounded-2xl p-4 shadow-xl relative">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
               <Grid className="w-4 h-4 text-purple-500" /> اختر أزواج التداول السريعة
@@ -1188,12 +1290,12 @@ export default function App() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   selectedCategoryFilter === cat.id 
                   ? "bg-fuchsia-500/10 border-fuchsia-400 text-fuchsia-400 shadow-[0_0_8px_rgba(34,211,238,0.2)]" 
-                  : "bg-[#1e143f] border-transparent text-slate-300 hover:bg-white/5"
+                  : "bg-theme-input border-transparent text-slate-300 hover:bg-white/5"
                 }`}
               >
                 <span className="text-sm opacity-90 grayscale-[0.2]">{cat.icon}</span>
                 <span>{cat.label}</span>
-                <span className={`ml-1 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-[10px] font-bold ${selectedCategoryFilter === cat.id ? 'bg-fuchsia-400 text-slate-900' : 'bg-[#291a54] text-slate-400'}`}>
+                <span className={`ml-1 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-[10px] font-bold ${selectedCategoryFilter === cat.id ? 'bg-fuchsia-400 text-slate-900' : 'bg-theme-hover text-slate-400'}`}>
                   {cat.count}
                 </span>
               </button>
@@ -1211,7 +1313,7 @@ export default function App() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="بحث... EURUSD, Tesla"
               dir="rtl"
-              className="w-full bg-[#1e143f] border border-transparent rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500/40 transition-colors"
+              className="w-full bg-theme-input border border-transparent rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500/40 transition-colors"
             />
           </div>
           
@@ -1275,7 +1377,7 @@ export default function App() {
                   className={`relative flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-sm font-bold transition-all cursor-pointer w-full text-right ${
                     isSelected
                       ? "bg-purple-500/15 border-purple-500 shadow-sm shadow-purple-500/10"
-                      : "bg-slate-50 dark:bg-[#0a0612] border-slate-100 dark:border-white/5 hover:border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:bg-white/5"
+                      : "bg-slate-50 dark:bg-theme-deep border-slate-100 dark:border-white/5 hover:border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:bg-white/5"
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1325,7 +1427,7 @@ export default function App() {
             {/* 1. Timeframe Selection */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">الفريم الزمني (Timeframe)</label>
-              <div className="grid grid-cols-5 gap-1 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-5 gap-1 bg-slate-50 dark:bg-theme-deep p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 {(["5s", "15s", "30s", "1m", "5m"] as Timeframe[]).map((tf) => (
                   <button
                     key={tf}
@@ -1346,7 +1448,7 @@ export default function App() {
             {/* 2. Signal Filtering Strategy */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">مستوى فلترة الإشارات</label>
-              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-theme-deep p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 <button
                   onClick={() => setRiskLevel("all")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all cursor-pointer ${
@@ -1373,7 +1475,7 @@ export default function App() {
             {/* 3. Multi-Chart Display Mode Toggle */}
             <div>
               <label className="text-sm text-slate-500 dark:text-[#999999] block mb-1.5 font-medium">نمط عرض الشاشات والرسوم البيانية</label>
-              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-[#0a0612] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="grid grid-cols-2 gap-1.5 bg-slate-50 dark:bg-theme-deep p-1 rounded-xl border border-slate-200 dark:border-white/10">
                 <button
                   onClick={() => setChartLayout("grid")}
                   className={`py-1.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
@@ -1453,7 +1555,7 @@ export default function App() {
 
           {/* Next Signal Countdown Indicator overlay (if running) */}
           {isGenerating && (
-            <div className="mt-4 bg-slate-50 dark:bg-[#0a0612]/80 p-3 rounded-xl border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-pulse relative z-10">
+            <div className="mt-4 bg-slate-50 dark:bg-theme-deep/80 p-3 rounded-xl border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-pulse relative z-10">
               <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                 <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
                 <span>
@@ -1480,7 +1582,7 @@ export default function App() {
                   checked={telegramEnabled}
                   onChange={(e) => setTelegramEnabled(e.target.checked)}
                 />
-                <div className="w-9 h-5 bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
+                <div className="w-9 h-5 bg-slate-50 dark:bg-theme-deep border border-slate-200 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
               </label>
             </div>
 
@@ -1493,7 +1595,7 @@ export default function App() {
                     value={telegramToken}
                     onChange={(e) => setTelegramToken(e.target.value)}
                     placeholder="1234567890:AAH_..."
-                    className="w-full bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
+                    className="w-full bg-slate-50 dark:bg-theme-deep border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -1503,7 +1605,7 @@ export default function App() {
                     value={telegramChatId}
                     onChange={(e) => setTelegramChatId(e.target.value)}
                     placeholder="-1001234567890"
-                    className="w-full bg-slate-50 dark:bg-[#0a0612] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
+                    className="w-full bg-slate-50 dark:bg-theme-deep border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-purple-500 focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -1569,10 +1671,10 @@ export default function App() {
         )}
 
         {/* Quick Blog Highlights Card */}
-        <div className="bg-gradient-to-r from-[#140b2e] via-[#1a0f38] to-[#140b2e] border border-purple-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+        <div className="bg-gradient-to-r from-theme-card via-[#1a0f38] to-theme-card border border-purple-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-fuchsia-600 to-pink-600 p-0.5 shadow-lg shadow-fuchsia-500/25 flex-shrink-0">
-              <div className="w-full h-full bg-[#0a0612] rounded-[14px] flex items-center justify-center text-fuchsia-400">
+              <div className="w-full h-full bg-theme-deep rounded-[14px] flex items-center justify-center text-fuchsia-400">
                 <Newspaper className="w-6 h-6" />
               </div>
             </div>
@@ -1606,17 +1708,37 @@ export default function App() {
         </div>
 
         {/* Bottom Educational Disclaimer Banner */}
-        <div className="bg-white dark:bg-bento-card/60 border border-slate-200 dark:border-white/10 p-4 rounded-2xl flex items-start gap-3">
-          <Info className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-slate-500 dark:text-[#999999] leading-relaxed">
-            <h4 className="font-bold text-slate-600 dark:text-slate-300 mb-1">إخلاء مسؤولية هامة عن تداول الخيارات الثنائية (Pocket Option & Deriv Higher/Lower):</h4>
-            <p>
-              هذا الروبوت يعتمد الاستراتيجية الأوروبية الناجحة المعتمدة على التوافق الثلاثي (EMA Ribbon 8/21/55 + Stochastic Oscillator 5/3/3 + Bollinger Bands)
-              مع تحليل نموذج الذكاء الاصطناعي Gemini ومحرك التحليل الفني. الخيارات الثنائية وأزواج OTC تنطوي على مخاطر مالية؛ استخدم دائماً إدارة رأس المال الصارمة (قاعدة 2%-5%) وتداول على الحساب التجريبي أولاً.
-            </p>
+        <div className="bg-white dark:bg-bento-card/60 border border-slate-200 dark:border-white/10 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-slate-500 dark:text-[#999999] leading-relaxed">
+              <h4 className="font-bold text-slate-600 dark:text-slate-300 mb-1">إخلاء مسؤولية هامة ودليل التداول الناجح:</h4>
+              <p>
+                هذا الروبوت يعتمد الاستراتيجية الأوروبية الناجحة المعتمدة على التوافق الثلاثي (EMA Ribbon 8/21/55 + Stochastic Oscillator 5/3/3 + Bollinger Bands).
+                الخيارات الثنائية تنطوي على مخاطر؛ استخدم دائماً إدارة رأس المال الصارمة وتداول على الحساب التجريبي أولاً.
+              </p>
+            </div>
           </div>
+          <button
+            onClick={() => setIsAcademyOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold whitespace-nowrap shadow-md cursor-pointer transition-all active:scale-95 self-stretch sm:self-auto justify-center flex-shrink-0"
+            id="btn-footer-open-academy"
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span>شرح التوافق الثلاثي 🎓</span>
+          </button>
         </div>
       </main>
+
+      {/* Signals Education Academy Modal */}
+      <SignalsEducationAcademy
+        isOpen={isAcademyOpen}
+        onClose={() => setIsAcademyOpen(false)}
+        onOpenLiveSignals={() => {
+          const el = document.getElementById("signals-feed-container");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
 
       {/* European Strategy Guide Modal */}
       <EuropeanStrategyGuide

@@ -24,7 +24,7 @@ export function HeroStatistics({ completedHistory, activeSignalsCount, onGenerat
   return (
     <div className="space-y-4 mb-8 w-full max-w-4xl mx-auto">
       {/* Top Banner */}
-      <div className="bg-[#0a0612] border border-purple-500/20 rounded-3xl p-8 text-center relative overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+      <div className="bg-theme-deep border border-purple-500/20 rounded-3xl p-8 text-center relative overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.1)]">
         {/* Glow effects */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[600px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none"></div>
         
@@ -59,7 +59,7 @@ export function HeroStatistics({ completedHistory, activeSignalsCount, onGenerat
       {/* 4 Grid Cards */}
       <div className="grid grid-cols-2 gap-4">
         {/* Total Signals */}
-        <div className="bg-[#0a0612] border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-[#140b2e] transition-colors">
+        <div className="bg-theme-deep border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-theme-card transition-colors">
           <div className="w-12 h-12 bg-fuchsia-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(217,70,239,0.3)]">
             <Target className="w-6 h-6 text-white" />
           </div>
@@ -68,7 +68,7 @@ export function HeroStatistics({ completedHistory, activeSignalsCount, onGenerat
         </div>
 
         {/* Active Signals */}
-        <div className="bg-[#0a0612] border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-[#140b2e] transition-colors">
+        <div className="bg-theme-deep border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-theme-card transition-colors">
           <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
             <Activity className="w-6 h-6 text-white" />
           </div>
@@ -77,7 +77,7 @@ export function HeroStatistics({ completedHistory, activeSignalsCount, onGenerat
         </div>
 
         {/* Win Rate */}
-        <div className="bg-[#0a0612] border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-[#140b2e] transition-colors">
+        <div className="bg-theme-deep border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-theme-card transition-colors">
           <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
             <Award className="w-6 h-6 text-white" />
           </div>
@@ -86,7 +86,7 @@ export function HeroStatistics({ completedHistory, activeSignalsCount, onGenerat
         </div>
 
         {/* Avg Confidence */}
-        <div className="bg-[#0a0612] border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-[#140b2e] transition-colors">
+        <div className="bg-theme-deep border border-purple-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-theme-card transition-colors">
           <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
             <TrendingUp className="w-6 h-6 text-white" />
           </div>

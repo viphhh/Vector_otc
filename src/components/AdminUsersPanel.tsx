@@ -48,7 +48,7 @@ export default function AdminUsersPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-[#0a0612]/95 backdrop-blur-xl flex flex-col p-4 sm:p-8" dir="rtl">
+    <div className="fixed inset-0 z-[99999] bg-theme-deep/95 backdrop-blur-xl flex flex-col p-4 sm:p-8" dir="rtl">
       <div className="flex items-center justify-between mb-8 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-cyan-500/10 border border-cyan-500/30 rounded-xl flex items-center justify-center">
@@ -75,7 +75,7 @@ export default function AdminUsersPanel({ onClose }: { onClose: () => void }) {
         ) : (
           <div className="grid gap-4">
             {users.map(user => (
-              <div key={user.id} className="bg-[#0a0612] border border-white/5 rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div key={user.id} className="bg-theme-deep border border-white/5 rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 
                 <div className="flex items-start gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${
@@ -130,7 +130,7 @@ export default function AdminUsersPanel({ onClose }: { onClose: () => void }) {
             ))}
             
             {users.length === 0 && (
-              <div className="text-center py-20 border border-white/5 border-dashed rounded-2xl bg-[#0a0612]">
+              <div className="text-center py-20 border border-white/5 border-dashed rounded-2xl bg-theme-deep">
                 <Users className="w-12 h-12 text-slate-500 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-white mb-1">لا يوجد مستخدمين</h3>
                 <p className="text-slate-400 text-sm">لم يقم أي مستخدم بالتسجيل بعد.</p>

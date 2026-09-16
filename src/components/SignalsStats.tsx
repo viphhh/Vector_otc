@@ -33,7 +33,7 @@ export default function SignalsStats({
             النسبة المستهدفة: 75% - 100%
           </span>
         </div>
-        <div className="p-3 bg-slate-50 dark:bg-[#0a0612] rounded-xl border border-slate-100 dark:border-white/5 text-emerald-400 z-10">
+        <div className="p-3 bg-slate-50 dark:bg-theme-deep rounded-xl border border-slate-100 dark:border-white/5 text-emerald-400 z-10">
           <Award className="w-5 h-5 animate-pulse" />
         </div>
       </div>
@@ -52,7 +52,7 @@ export default function SignalsStats({
             مجموع الصفقات: {total}
           </span>
         </div>
-        <div className="p-2.5 bg-slate-50 dark:bg-[#0a0612] rounded-xl border border-slate-100 dark:border-white/5 flex space-x-1 space-x-reverse text-slate-500 dark:text-[#999999] z-10">
+        <div className="p-2.5 bg-slate-50 dark:bg-theme-deep rounded-xl border border-slate-100 dark:border-white/5 flex space-x-1 space-x-reverse text-slate-500 dark:text-[#999999] z-10">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <XCircle className="w-4 h-4 text-red-500" />
         </div>
@@ -70,7 +70,7 @@ export default function SignalsStats({
             تصنيف الجلسة: ممتازة جداً
           </span>
         </div>
-        <div className="p-3 bg-slate-50 dark:bg-[#0a0612] rounded-xl border border-slate-100 dark:border-white/5 text-blue-500 z-10">
+        <div className="p-3 bg-slate-50 dark:bg-theme-deep rounded-xl border border-slate-100 dark:border-white/5 text-blue-500 z-10">
           <TrendingUp className="w-5 h-5" />
         </div>
       </div>

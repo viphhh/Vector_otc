@@ -110,11 +110,11 @@ export function ArticleReaderModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
       <div 
-        className="relative w-full max-w-4xl bg-[#0a0612] border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-4xl bg-theme-deep border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
         id="article-reader-dialog"
       >
         {/* Modal Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-500/20 bg-[#140b2e]/90 backdrop-blur sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-500/20 bg-theme-card/90 backdrop-blur sticky top-0 z-20">
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
@@ -162,7 +162,7 @@ export function ArticleReaderModal({
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0612] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-theme-deep via-transparent to-transparent opacity-80" />
             </div>
           )}
 
@@ -270,7 +270,7 @@ export function ArticleReaderModal({
                   <div
                     key={rel.id}
                     onClick={() => onSelectArticle(rel)}
-                    className="p-4 rounded-2xl bg-[#140b2e] border border-purple-500/20 hover:border-fuchsia-500/40 cursor-pointer transition-all duration-200 group flex flex-col justify-between"
+                    className="p-4 rounded-2xl bg-theme-card border border-purple-500/20 hover:border-fuchsia-500/40 cursor-pointer transition-all duration-200 group flex flex-col justify-between"
                   >
                     <div>
                       <span className="text-[11px] text-fuchsia-400 font-semibold">{rel.category}</span>

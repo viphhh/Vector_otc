@@ -202,11 +202,11 @@ export function PublishArticleModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
       <div 
-        className="relative w-full max-w-3xl bg-[#0a0612] border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[94vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-3xl bg-theme-deep border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[94vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
         id="publish-article-dialog"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-500/20 bg-[#140b2e]/90 backdrop-blur sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-500/20 bg-theme-card/90 backdrop-blur sticky top-0 z-20">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/30 flex items-center justify-center text-fuchsia-400">
               <Send className="w-5 h-5" />
@@ -295,7 +295,7 @@ export function PublishArticleModal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="مثال: أسرار التداول على الذهب بفريم 15 ثانية"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl bg-theme-card border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors"
                   required
                 />
               </div>
@@ -310,7 +310,7 @@ export function PublishArticleModal({
                   onChange={(e) => setExcerpt(e.target.value)}
                   placeholder="موجز سريع في سطرين يلخص ما سيتعلمه القارئ من هذا المقال..."
                   rows={2}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-theme-card border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors resize-none"
                   required
                 />
               </div>
@@ -448,16 +448,16 @@ export function PublishArticleModal({
                       value={customCategoryName}
                       onChange={(e) => setCustomCategoryName(e.target.value)}
                       placeholder="اكتب اسم التصنيف الجديد..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
+                      className="w-full px-4 py-2.5 rounded-xl bg-theme-card border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
                     />
                   ) : (
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
+                      className="w-full px-4 py-2.5 rounded-xl bg-theme-card border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
                     >
                       {categories.map((c) => (
-                        <option key={c.id} value={c.nameAr} className="bg-[#140b2e] text-white">
+                        <option key={c.id} value={c.nameAr} className="bg-theme-card text-white">
                           {c.nameAr}
                         </option>
                       ))}
@@ -474,7 +474,7 @@ export function PublishArticleModal({
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
                     placeholder="اسم الكاتب"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
+                    className="w-full px-4 py-2.5 rounded-xl bg-theme-card border border-purple-500/30 text-white text-sm focus:outline-none focus:border-fuchsia-400"
                   />
                 </div>
               </div>
@@ -518,7 +518,7 @@ export function PublishArticleModal({
                       }
                     }}
                     placeholder="اكتب وسماً جديداً ثم اضغط إضافة أو Enter (مثال: الذهب_XAUUSD)"
-                    className="flex-1 px-4 py-2 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:border-fuchsia-400"
+                    className="flex-1 px-4 py-2 rounded-xl bg-theme-card border border-purple-500/30 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:border-fuchsia-400"
                   />
                   <button
                     type="button"
@@ -584,7 +584,7 @@ export function PublishArticleModal({
                   value={customCoverUrl}
                   onChange={(e) => setCustomCoverUrl(e.target.value)}
                   placeholder="أو أدخل رابط صورة مخصصة (URL)..."
-                  className="w-full px-4 py-2 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:border-fuchsia-400"
+                  className="w-full px-4 py-2 rounded-xl bg-theme-card border border-purple-500/30 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:border-fuchsia-400"
                 />
               </div>
 
@@ -608,7 +608,7 @@ export function PublishArticleModal({
 
 > 💡 نصيحة: التزم دائماً بنسبة وقف الخسارة.`}
                   rows={8}
-                  className="w-full px-4 py-3 rounded-xl bg-[#140b2e] border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors font-sans"
+                  className="w-full px-4 py-3 rounded-xl bg-theme-card border border-purple-500/30 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:border-fuchsia-400 transition-colors font-sans"
                   required
                 />
               </div>
@@ -616,7 +616,7 @@ export function PublishArticleModal({
           )}
 
           {/* Footer Submit */}
-          <div className="pt-4 border-t border-purple-500/20 flex items-center justify-end gap-3 sticky bottom-0 bg-[#0a0612] py-2">
+          <div className="pt-4 border-t border-purple-500/20 flex items-center justify-end gap-3 sticky bottom-0 bg-theme-deep py-2">
             <button
               type="button"
               onClick={onClose}
