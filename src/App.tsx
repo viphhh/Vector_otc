@@ -53,6 +53,7 @@ import {
   ArrowLeft,
   Globe,
   GraduationCap,
+  Minimize2,
 } from "lucide-react";
 
 // Predefined available assets (Forex, OTC & Commodities with real-world live pricing)
@@ -455,6 +456,49 @@ export default function App() {
       console.error("Failed to apply initial SEO:", e);
     }
   }, []);
+
+  // Auto-Fullscreen on first interaction
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const enableFullscreen = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((err) => {
+          console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      }
+    };
+
+    const handleFirstInteraction = () => {
+      enableFullscreen();
+      // Remove listeners after first interaction
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
+    };
+
+    document.addEventListener("click", handleFirstInteraction);
+    document.addEventListener("touchstart", handleFirstInteraction);
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => console.warn(err));
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   // Timer to next automated signal
   const [secondsToNextSignal, setSecondsToNextSignal] = useState<number>(5);
@@ -1054,6 +1098,19 @@ export default function App() {
 
           {/* Quick HUD status info & Platform Selector */}
           <div className="flex items-center space-x-3 space-x-reverse flex-wrap gap-2 sm:gap-0">
+            {/* Fullscreen Toggle */}
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 rounded-xl border border-slate-300 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-purple-500 dark:hover:text-purple-400 hover:bg-theme-input/50 transition-colors"
+              title="تفعيل/إلغاء وضع ملء الشاشة"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4" />
+              ) : (
+                <Maximize2 className="w-4 h-4" />
+              )}
+            </button>
+
             {/* Theme Selector */}
             <div className="relative group">
               <select
